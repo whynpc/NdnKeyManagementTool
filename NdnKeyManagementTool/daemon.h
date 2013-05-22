@@ -9,9 +9,6 @@ class Daemon : public QObject
 public:
     explicit Daemon(QObject *parent = 0);
     
-signals:
-    
-public slots:
     
 };
 

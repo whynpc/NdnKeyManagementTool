@@ -10,6 +10,8 @@
 
 class OrganizerSession : public QObject
 {
+    Q_OBJECT
+
 public:
     OrganizerSession(const QString &sessionName, const QString &applicationName,
                      const QString &selfName, QObject *parent);

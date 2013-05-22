@@ -83,6 +83,7 @@ int OrganizerSession::sendRenewSharedKeyRemote()
     foreach(Peer *peer, participants.values()) {
         // TODO: send notification to each participant
     }
+    return 0;
 }
 
 int OrganizerSession::recvCreateSharedKeyLocal()

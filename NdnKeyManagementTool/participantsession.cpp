@@ -142,11 +142,13 @@ int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNu
 
 void ParticipantSession::renewSharedKey(int version)
 {
-    delete sharedKey;
-    sharedKey = sharedKeyCache;
-    sharedKeyCache = NULL;
+    if (version > sharedKey->getVersion()) {
+        delete sharedKey;
+        sharedKey = sharedKeyCache;
+        sharedKeyCache = NULL;
 
-    this->sendRenewSharedKeyLocal();
+        this->sendRenewSharedKeyLocal();
+    }
 }
 
 int ParticipantSession::sendRenewSharedKeyLocal()

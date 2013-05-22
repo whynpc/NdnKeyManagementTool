@@ -13,6 +13,7 @@ class Application;
 
 class ParticipantSession : public QObject
 {
+    Q_OBJECT
 
 public:
     enum State {INIT = 0, PENDING, ACCEPTED, REJECTED};
