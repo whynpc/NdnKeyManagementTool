@@ -13,8 +13,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    context.cpp \
+    application.cpp \
+    daemon.cpp \
+    organizersession.cpp \
+    participantsession.cpp \
+    sharedkey.cpp \
+    peer.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    context.h \
+    application.h \
+    daemon.h \
+    organizersession.h \
+    participantsession.h \
+    sharedkey.h \
+    peer.h
 
 FORMS    += mainwindow.ui
