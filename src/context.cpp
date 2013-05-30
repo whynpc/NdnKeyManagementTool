@@ -53,3 +53,8 @@ int Context::removeApplication(const QString &appName)
         return -1;
     }
 }
+
+#if WAF
+#include "context.moc"
+#include "context.cpp.moc"
+#endif

@@ -166,3 +166,8 @@ int ParticipantSession::recvFetchSharedKeyLocal(int version, int chunkNum)
         return -1;
     }
 }
+
+#if WAF
+#include "participantsession.moc"
+#include "participantsession.cpp.moc"
+#endif

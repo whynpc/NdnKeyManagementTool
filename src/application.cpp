@@ -95,3 +95,8 @@ ParticipantSession *Application::getParticipantSession(const QString &sessionNam
         return NULL;
     }
 }
+
+#if WAF
+#include "application.moc"
+#include "application.cpp.moc"
+#endif

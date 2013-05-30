@@ -125,3 +125,8 @@ int OrganizerSession::recvRejectJoinLocal(const QString &peerName)
     this->rejectJoin(peerName);
     return 0;
 }
+
+#if WAF
+#include "organizersession.moc"
+#include "organizersession.cpp.moc"
+#endif

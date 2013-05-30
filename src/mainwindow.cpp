@@ -12,3 +12,8 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+#ifdef WAF
+#include "mainwindow.moc"
+#include "mainwindow.cpp.moc"
+#endif

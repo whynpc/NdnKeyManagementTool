@@ -75,3 +75,8 @@ int SharedKey::saveChunk(const int chunkNum, const QByteArray &chunkData)
     }
     return 0;
 }
+
+#if WAF
+#include "sharedkey.moc"
+#include "sharedkey.cpp.moc"
+#endif
