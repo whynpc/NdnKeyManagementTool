@@ -100,14 +100,15 @@ def build (bld):
     <string>THIS IS A GENERATED FILE, DO NOT MODIFY</string>
     <key>CFBundleExecutable</key>
     <string>%s</string>
-    <key>LSUIElement</key>
-    <string>1</string>
 </dict>
 </plist>'''
         qt.mac_app = "KeyTool.app"
         qt.mac_plist = app_plist % "KeyTool"
         # qt.mac_resources = 'chronoshare.icns'
         # qt.use += " OSX_FOUNDATION OSX_COREWLAN adhoc"
+
+    # <key>LSUIElement</key>
+    # <string>1</string>
 
     # <key>CFBundleIconFile</key>
     # <string>chronoshare.icns</string>
