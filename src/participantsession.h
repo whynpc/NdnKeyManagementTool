@@ -28,14 +28,22 @@ public:
     State getState() const;
     Peer *getOrganizer() const;
 
+    // recv Accept Interest from organizer
     int recvAcceptJoinRemote();
+    // recv Reject Interest from organizer
     int recvRejectJoinRemote();
+    // recv Shared Key Data from organizer
     int recvSharedKeyRemote(const int version, const int chunkNum, const int chunkSize,
-                            const QByteArray &chunkData);
+                            const std::string &chunkData);
+    // recv Renew Shared Key Interest from organizer
     int recvRenewSharedKeyRemote(const int version);
-
+    // recv Fetch Public Key Interest from organizer/participant
+    int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum,
+				 std::string &buffer);
+    // recv Join Interest from application
     int recvJoinLocal();
-    int recvFetchSharedKeyLocal(int version, int chunkNum);
+    // recv Fetch Shared Key Interest from application
+    int recvFetchSharedKeyLocal(int &version, int &chunkNum);
 
 public slots:
     void renewSharedKey(int version);
