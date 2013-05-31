@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QHash>
+#include <string>
 
 #include "organizersession.h"
 #include "participantsession.h"
@@ -22,12 +23,12 @@ public:
                                  const QString &organizerName);
     int destroyParticipantSession(const QString &sessionName);
 
-    int recvCreateOrganizerSession(const QString &sessionName, const QString &selfName);
-    int recvDestroyOrganizerSession(const QString &sessionName);
+    int recvCreateOrganizerSession(const std::string &sessionName, const std::string &selfName);
+    int recvDestroyOrganizerSession(const std::string &sessionName);
 
-    int recvCreateParticipantSession(const QString &sessionName, const QString &selfName,
-                                     const QString &organizerName);
-    int recvDestroyParticipantSession(const QString &sessionName);
+    int recvCreateParticipantSession(const std::string &sessionName, const std::string &selfName,
+                                     const std::string &organizerName);
+    int recvDestroyParticipantSession(const std::string &sessionName);
 
     OrganizerSession *getOrganizerSession(const QString &sessionName) const;
     ParticipantSession *getParticipantSession(const QString &sessionName) const;

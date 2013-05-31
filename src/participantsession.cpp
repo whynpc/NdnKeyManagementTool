@@ -124,12 +124,13 @@ int ParticipantSession::sendFetchSharedKeyRemote(const int version, const int ch
     }
 }
 
-int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNum, const int chunkSize,
-                                            const QByteArray &chunkData)
+int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNum, 
+                                            const int chunkSize, const std::string &chunkData)
 {
+    QByteArray qChunkData(chunkData.c_str());
     if (sharedKeyCache != NULL && version == sharedKeyCache->getVersion()) {
         sharedKeyCache->setSize(chunkSize);
-        sharedKeyCache->saveChunk(chunkNum, chunkData);
+        sharedKeyCache->saveChunk(chunkNum, qChunkData);
 
         if (sharedKeyCache->isComplete()) {
             emit newSharedKey(sharedKeyCache->getVersion());
