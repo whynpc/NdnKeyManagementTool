@@ -53,28 +53,35 @@ int Application::destroyParticipantSession(const QString &sessionName)
     }
 }
 
-int Application::recvCreateOrganizerSession(const QString &sessionName, const QString &selfName)
+int Application::recvCreateOrganizerSession(const std::string &sessionName, const std::string &selfName)
 {
-    this->createOrganizerSession(sessionName, selfName);
+    QString qSessionName(sessionName.c_str());
+    QString qSelfName(selfName.c_str());
+    this->createOrganizerSession(qSessionName, qSelfName);
     return 0;
 }
 
-int Application::recvDestroyOrganizerSession(const QString &sessionName)
+int Application::recvDestroyOrganizerSession(const std::string &sessionName)
 {
-    this->destroyOrganizerSession(sessionName);
+    QString qSessionName(sessionName.c_str());    
+    this->destroyOrganizerSession(qSessionName);
     return 0;
 }
 
-int Application::recvCreateParticipantSession(const QString &sessionName, const QString &selfName,
-                                              const QString &organizerName)
+int Application::recvCreateParticipantSession(const std::string &sessionName, const std::string &selfName,
+                                              const std::string &organizerName)
 {
-    this->createParticipantSession(sessionName, selfName, organizerName);
+    QString qSessionName(sessionName.c_str());
+    QString qSelfName(selfName.c_str());
+    QString qOrganizerName(organizerName.c_str());
+    this->createParticipantSession(qSessionName, qSelfName, qOrganizerName);
     return 0;
 }
 
-int Application::recvDestroyParticipantSession(const QString &sessionName)
+int Application::recvDestroyParticipantSession(const std::string &sessionName)
 {
-    this->destroyParticipantSession(sessionName);
+    QString qSessionName(sessionName.c_str());
+    this->destroyParticipantSession(qSessionName);
     return 0;
 }
 

@@ -10,7 +10,7 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
     // TODO: publish data for organizer discovery
 }
 
-int OrganizerSession::recvJoinRemote(const QString &peerName)
+int OrganizerSession::recvJoinRemote(const std::string &peerName)
 {
     if (blacklist.contains(peerName)) {
         // TODO: possible to send reject later

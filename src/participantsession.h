@@ -3,11 +3,12 @@
 
 #include <QObject>
 #include <QString>
-
+#include <QByteArray>
+#include <string>
 #include "sharedkey.h"
 #include "peer.h"
 
-class Session;
+
 class Peer;
 class Application;
 
@@ -28,6 +29,7 @@ public:
     State getState() const;
     Peer *getOrganizer() const;
 
+
     // recv Accept Interest from organizer
     int recvAcceptJoinRemote(); //
     // recv Reject Interest from organizer
@@ -36,13 +38,17 @@ public:
     int recvSharedKeyRemote(const int version, const int chunkNum, const int chunkSize,
                             const std::string &chunkData);//
     // recv Renew Shared Key Interest from organizer
+
     int recvRenewSharedKeyRemote(const int version);
-    // recv Fetch Public Key Interest from organizer/participant
-    int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum,
-				 std::string &buffer);//
-    // recv Join Interest from application
+// recv Fetch Public Key Interest from organizer/participant
+    int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum, int &chunkSize, std::string &buffer);
+// recv Public Key Data from organizer/participant
+    int recvPublicKeyRemote(const int version, const int chunkNum, 
+                            const int chunkSize, const std::string &chunkData);
+    
+// recv Join Interest from application
     int recvJoinLocal();
-    // recv Fetch Shared Key Interest from application
+// recv Fetch Shared Key Interest from application
     int recvFetchSharedKeyLocal(int &version, int &chunkNum);
 
 public slots:

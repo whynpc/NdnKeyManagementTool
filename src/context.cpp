@@ -54,6 +54,22 @@ int Context::removeApplication(const QString &appName)
     }
 }
 
+void retrieveSession(const std::string &appName, const std::string &sessionName, 
+		     OrganizerSession **oSession, ParticipantSession **pSession) const
+{
+    QString qAppName(appName.c_str());
+    QString qSessionName(sessionName.c_str());
+    *oSession = getOrganizerSession(qAppName, qSessionName);
+    *pSession = getParticipantSession(qAppName, qSessionName);
+}
+
+void retrieveApplication(const std::string &appName, Application **application) const
+{
+    QString qAppName(appName.c_str());
+    *application = getApplication(qAppName);
+}
+
+
 #if WAF
 #include "context.moc"
 #include "context.cpp.moc"

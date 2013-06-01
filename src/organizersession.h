@@ -36,10 +36,13 @@ public:
     int recvJoinRemote(const std::string &peerName);
     // recv Fetch Shared Key Interest from participant
     int recvFecthSharedKeyRemote(const std::string &peerName, int &version, int &chunkNum,
-				 std::string &buffer);//
+                                 std::string &buffer);
     // recv Fetch Public Key from participant
     int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum,
-				 std::string &buffer);//
+                                 std::string &buffer);
+// recv Public Key Data from participant
+    int recvPublicKeyRemote();
+
 
 
 private:
