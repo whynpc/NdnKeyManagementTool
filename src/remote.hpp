@@ -12,25 +12,32 @@ using namespace Ccnx;
 class remote
 {
 public:
+    static remote *instance() {
+        if (_instance == NULL) {
+     		_instance = new remote();
+        }
+        return _instance;
+    }
 	int split( string& str, vector<string>& ret_, string sep);
-	int Init(std::string prefix,
+	int init(std::string prefix,
              std::string consumer,std::string organizer,std::string
              endpoint,std::string action);
     //	Ccnx::Name sharedKeyOnData(Ccnx::Name name);
 	void runDataCallback(Name name, Ccnx::PcoPtr pco);
+    Ccnx::Name getBaseName(Ccnx::Name name);
 	void runTimeoutCallback(Name interest, const Closure &closure, Selectors selectors);
-	void fetchSharedKey(std::string prefix,
-                        std::string consumer,std::string organizer);
-	void fetchPublicKey(std::string prefix,
-                        std::string consumer,std::string organizer);
-	void updateSharedKey(std::string prefix,
-                         std::string consumer,std::string organizer);
-    void joinMembership(std::string prefix,
-                        std::string consumer,std::string organizer);
-	void acceptMembership(std::string prefix,
-                          std::string consumer,std::string organizer);
-    void rejectMembership(std::string prefix,
-                          std::string consumer,std::string organizer);
+    void fetchSharedKey(std::string app, std::string session,
+                                std::string consumer,std::string organizer);
+    void fetchPublicKey(std::string app, std::string session,
+                                std::string consumer,std::string organizer);
+    void updateSharedKey(std::string app, std::string session,
+                                 std::string consumer,std::string organizer);
+    void joinMembership(std::string app, std::string session,
+                                std::string consumer,std::string organizer);
+    void acceptMembership(std::string app, std::string session,
+                                  std::string consumer,std::string organizer);
+    void rejectMembership(std::string app, std::string session,
+                                  std::string consumer,std::string organizer);
 private:
 //	 Ccnx::Name InterestBaseName;
    Ccnx::Wrapper handler;

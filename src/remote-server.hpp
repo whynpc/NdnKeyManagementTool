@@ -9,7 +9,7 @@ class remoteServer
 public:
   static remoteServer *instance() {
      if (_instance == NULL) {
-     		_instance = new RemoteServer();
+     		_instance = new remoteServer();
      }         
      return _instance;
   }   
@@ -19,7 +19,7 @@ public:
 	Ccnx::Name InterestBaseName;
 	Ccnx::Wrapper handler;
 	void OnInterest (Ccnx::Name name, Ccnx::Selectors selectors);
-	int  init(std::string prefix);
+	int  init(std::string app, std::string session);
 private:
 	int version; //shared-key version
 	int chunkSize;

@@ -200,7 +200,7 @@ int  remoteServer::init(std::string app, std::string session){
 	prefix.append("_");
 	prefix.append(session);
 	Ccnx::Name interestBaseName = Ccnx::Name();
-  interestBaseName.appendComp(prefix);
+    interestBaseName.appendComp(prefix);
 	handler.setInterestFilter (interestBaseName, boost::bind (&remoteServer::OnInterest, this, _1, _2));
     while (true)
     {

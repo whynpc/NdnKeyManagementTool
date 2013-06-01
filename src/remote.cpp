@@ -108,7 +108,7 @@ void remote::rejectMembership(std::string app, std::string session,
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-int remote::Init(std::string prefix,
+int remote::init(std::string prefix,
                  std::string consumer,std::string organizer,std::string
                  endpoint,std::string action){
     

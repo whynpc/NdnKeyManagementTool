@@ -149,15 +149,17 @@ void localServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
   handler.publishData (dataName, dataContent, 5);
 }
 
-int  localServer::init(std::string prefix){	
-	
-  InterestBaseName.appendComp(prefix);
-  cout<<"interstbasename  "<<InterestBaseName<<endl;
-  handler.setInterestFilter (InterestBaseName, boost::bind (&localServer::OnInterest, this, _1, _2));
-  while (true)
+int  localServer::init(std::string appName){
+
+	Ccnx::Name interestBaseName = Ccnx::Name();
+    interestBaseName.appendComp("Local");
+    interestBaseName.appendComp("KeyManagementTool");
+    interestBaseName.appendComp(appName);
+    handler.setInterestFilter (interestBaseName, boost::bind (&localServer::OnInterest, this, _1, _2));
+    while (true)
     {
       sleep (1);
     }
-  return 0;
+    return 0;
 }
 
