@@ -5,7 +5,6 @@
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <map>
-#include "remote.hpp" 
 
 using namespace std;
 using namespace Ccnx;
@@ -21,7 +20,12 @@ public:
   Ccnx::Name parseSharedKey(Ccnx::Name name, char *dataContent);
   int  init(std::string prefix);
 private:
-	remote r;
+	std::string mystatus;
+	OrganizerSession *oSession;
+	ParticipantSession *pSession;
+	int chunkSize;
+  int chunkNum;        	  
+  int version;
 //private:
 //	map<std::string,std::string> sessionInfo;
 };

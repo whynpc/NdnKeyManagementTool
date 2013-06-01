@@ -29,17 +29,17 @@ public:
     Peer *getOrganizer() const;
 
     // recv Accept Interest from organizer
-    int recvAcceptJoinRemote();
+    int recvAcceptJoinRemote(); //
     // recv Reject Interest from organizer
-    int recvRejectJoinRemote();
+    int recvRejectJoinRemote(); //
     // recv Shared Key Data from organizer
     int recvSharedKeyRemote(const int version, const int chunkNum, const int chunkSize,
-                            const std::string &chunkData);
+                            const std::string &chunkData);//
     // recv Renew Shared Key Interest from organizer
     int recvRenewSharedKeyRemote(const int version);
     // recv Fetch Public Key Interest from organizer/participant
     int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum,
-				 std::string &buffer);
+				 std::string &buffer);//
     // recv Join Interest from application
     int recvJoinLocal();
     // recv Fetch Shared Key Interest from application

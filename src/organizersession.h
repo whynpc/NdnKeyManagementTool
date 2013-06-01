@@ -23,11 +23,11 @@ public:
     int renewSharedKey(const int currentVersion);
 
     // recv Create Shared Key Interest from application
-    int recvCreateSharedKeyLocal();
+    int recvCreateSharedKeyLocal(); //add session name
     // recv Renew Shared Key Interest from application
-    int recvRenewSharedKeyLocal(const int currentVersion);
+    int recvRenewSharedKeyLocal(const int currentVersion);//?is the version known by protol?
     // recv Accept Interest from application
-    int recvAcceptJoinLocal(const std::string &peerName);
+    int recvAcceptJoinLocal(const std::string &peerName);  //?don't exist
     // recv Reject Interest from application
     int recvRejectJoinLocal(const std::string &peerName);
     // recv Fetch Shared Key Interest from application
@@ -36,10 +36,10 @@ public:
     int recvJoinRemote(const std::string &peerName);
     // recv Fetch Shared Key Interest from participant
     int recvFecthSharedKeyRemote(const std::string &peerName, int &version, int &chunkNum,
-				 std::string &buffer);
+				 std::string &buffer);//
     // recv Fetch Public Key from participant
     int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum,
-				 std::string &buffer);
+				 std::string &buffer);//
 
 
 private:
