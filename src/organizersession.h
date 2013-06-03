@@ -32,7 +32,7 @@ public:
 
     int recvRejectJoinLocal(const std::string &peerName);
         // recv Fetch Shared Key Interest from application
-    int recvFetchSharedKeyLocal(int &version, int &chunkNum);
+    int recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer);
         // recv Join Interest from participant
     int recvJoinRemote(const std::string &peerName);
         // recv Fetch Shared Key Interest from participant

@@ -126,6 +126,11 @@ int OrganizerSession::recvRejectJoinLocal(const std::string &peerName)
     return 0;
 }
 
+int OrganizerSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer)
+{
+    return 0;
+}
+
 #if WAF
 #include "organizersession.moc"
 #include "organizersession.cpp.moc"
