@@ -7,6 +7,34 @@
 
 using namespace std;
 
+int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)            
+{                                                                            
+	  RSA *keypair;                                                            
+	  char *key2 = (char *)key;                                                
+    d2i_RSAPublicKey(&keypair,  & (const unsigned char *)key, len);          
+//    cout <<RSA_size(keypair)<<endl;                                        
+	  *to = (char *)malloc(RSA_size(keypair));                                 
+		int encrypt_len = RSA_public_encrypt(strlen(from), (unsigned char*)from, 
+		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);                 
+                                                                             
+		return encrypt_len;                                                      
+}                                                                            
+
+int remoteServer::do_decrypt(char **to, char *from, unsigned char *key,int len)               
+{                                                                               
+		RSA *keypair;                                                               
+	  char *key2 = (char *)key;                                                   
+    d2i_RSAPrivateKey(&keypair,  & (const unsigned char *)key, len);            
+//    cout <<RSA_size(keypair)<<endl;                                           
+	  *to = (char *)malloc(RSA_size(keypair));                                    
+		int encrypt_len = RSA_private_decrypt(strlen(from), (unsigned char*)from,   
+		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);                    
+                                                                                
+		return encrypt_len;                                                         
+	                                                                              
+}                                                                               
+
+
 Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
     int flag;
     std::string consumer = name.getCompAsString(1); //consumer
@@ -33,6 +61,10 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
         	  {
 						  oSession->recvFecthSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
             }
+            char *from = ret.c_str();
+            char *to = NULL;
+//          get public key
+//            do_encrypt(&to, from,key,int len)
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
             tmp.append(v);
@@ -54,6 +86,10 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
             {
 				  		oSession->recvFecthSharedKeyRemote(consumer, version, chunkNum, chunkSize, ret);
 				  	}
+				  	char *from = ret.c_str();
+            char *to = NULL;
+//          get public key
+//            do_encrypt(&to, from,key,int len)
         }
     }
     else{

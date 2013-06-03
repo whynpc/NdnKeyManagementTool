@@ -26,12 +26,12 @@ public:
   Ccnx::Name parseSharedKey(Ccnx::Name name, std::string &ret);
   int  init(std::string appName);
 private:
-	std::string mystatus;
-	OrganizerSession *oSession;
-	ParticipantSession *pSession;
-	int chunkSize;
-  int chunkNum;        	  
+  OrganizerSession *oSession;
+  ParticipantSession *pSession;
+  int chunkSize;
+  int chunkNum;
   int version;
+  static localServer *_instance = NULL;
 //private:
 //	map<std::string,std::string> sessionInfo;
 };

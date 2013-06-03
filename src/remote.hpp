@@ -41,6 +41,7 @@ public:
 private:
 //	 Ccnx::Name InterestBaseName;
    Ccnx::Wrapper handler;
+   static remote *_instance = NULL;
 //   OrganizerSession *orgsession;
 //	 ParticipantSession *partsession;
 //	 int chunk;
