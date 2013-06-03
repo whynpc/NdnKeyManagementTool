@@ -47,7 +47,7 @@ public:
 // recv Join Interest from application
     int recvJoinLocal();
 // recv Fetch Shared Key Interest from application
-    int recvFetchSharedKeyLocal(int &version, int &chunkNum);
+    int recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer);
 
 public slots:
     void renewSharedKey(int version);

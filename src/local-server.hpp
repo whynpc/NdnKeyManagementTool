@@ -1,3 +1,6 @@
+#ifndef LOCAL_SERVER
+#define LOCAL_SERVER
+
 #include <ccnx-cpp.h>
 #include <iostream>
 #include <boost/algorithm/string/predicate.hpp>
@@ -5,6 +8,9 @@
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <map>
+#include "application.h"
+#include "organizersession.h"
+#include "participantsession.h"
 
 using namespace std;
 using namespace Ccnx;
@@ -35,3 +41,5 @@ private:
 //private:
 //	map<std::string,std::string> sessionInfo;
 };
+
+#endif//local-server

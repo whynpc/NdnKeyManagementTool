@@ -1,13 +1,17 @@
 #include <ccnx-cpp.h>
 #include <iostream>
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/any.hpp>
 #include <vector>
 #include <map>
 #include "local-server.hpp" 
+#include "application.h"
+#include "organizersession.h"
+#include "participantsession.h"
+#include "context.h"
 
 using namespace std;
 using namespace Ccnx;
@@ -19,7 +23,7 @@ Ccnx::Name localServer::parseSession(Ccnx::Name name){
   std::string appname = name.getCompAsString(2); //app
   Ccnx::Name dataName = name;
   Application *application;
-  Context::instance()->getApplication(appname);
+  Context::instance()->retrieveApplication(appname, &application);
   	 	
   vector<std::string> tmp;
   std::string session = tmp[1];
@@ -27,29 +31,29 @@ Ccnx::Name localServer::parseSession(Ccnx::Name name){
   if (boost::starts_with(action,"create="))
     {
       dataName.appendComp("code=0");
-      application->createOrganizerSession(session,organizer);
+      application->recvCreateOrganizerSession(session,organizer);
     }
   if (boost::starts_with(action,"participate="))
     {
       dataName.appendComp("code=0");
-      application->createParticipantSession(session,participant,organizer);
+      application->recvCreateParticipantSession(session,participant,organizer);
     }
   if (boost::starts_with(action,"destroy="))
     {
       dataName.appendComp("code=0");
-      application->destroyOrganizerSession(session);
+      application->recvDestroyOrganizerSession(session);
     }
   if (boost::starts_with(action,"quit="))
     {
       dataName.appendComp("code=0");
-      application->destroyParticipantSession(session);
+      application->recvDestroyParticipantSession(session);
     }
   if (boost::starts_with(action,"join="))
     {
       Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
 			if (pSession)
 			{
-				pSession->recvLocal();
+				pSession->recvJoinLocal();
 			}
       dataName.appendComp("code=0");
     }
@@ -62,6 +66,7 @@ Ccnx::Name localServer::parseSharedKey(Ccnx::Name name,
 	std::string appname = name.getCompAsString(2); //app
   std::string action = name.getCompAsString(7); //action
   Ccnx::Name dataName = name;
+  int size = name.size();
   vector<std::string> tmp;
   boost::split(tmp,action,boost::is_any_of("="));
   std::string session = tmp[1];
@@ -70,14 +75,18 @@ Ccnx::Name localServer::parseSharedKey(Ccnx::Name name,
     {
       if (oSession)
       {
-      	oSesssion->recvCreateSharedKeyLocal();
+      	oSession->recvCreateSharedKeyLocal();
       }
       dataName.appendComp("code=0");
     }
   if (boost::starts_with(action,"update="))
     {
-      int version = atoi(tmp[2].c_str())
-      orgsession->recvRenewSharedKeyLocal(version);
+      int version = atoi(tmp[2].c_str());
+      if (oSession)
+      {
+      	oSession->recvRenewSharedKeyLocal(version);
+      }
+ //     orgsession->recvRenewSharedKeyLocal(version);
       dataName.appendComp("code=0");
     }
   if (action.compare("fetch") == 0)
@@ -144,7 +153,7 @@ void localServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     dataName = parseSession(name);
   }
   if (endPoint.compare("shared-key") == 0){
-     dataName = parseSharedKey(name,&dataContent);
+     dataName = parseSharedKey(name, dataContent);
   }
   handler.publishData (dataName, dataContent, 5);
 }

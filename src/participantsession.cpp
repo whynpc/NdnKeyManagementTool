@@ -137,7 +137,7 @@ int ParticipantSession::sendRenewSharedKeyLocal()
     return 0;
 }
 
-int ParticipantSession::recvFetchSharedKeyLocal(int &version, int &chunkNum)
+int ParticipantSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer)
 {
     if (version != sharedKey->getVersion()) {
         // send chunk
