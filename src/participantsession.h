@@ -53,10 +53,6 @@ public:
 public slots:
     void renewSharedKey(int version);
 
-signals:
-    void newSharedKey(int version);
-
-
 private:
     int sendJoinRemote();
     int sendFetchSharedKeyRemote(const int version, const int chunkNum);
@@ -68,7 +64,6 @@ private:
     QString name;
     QString appName;
     SharedKey *sharedKey;
-    SharedKey *sharedKeyCache;
     Peer *self;
     Peer *organizer;
     State state;

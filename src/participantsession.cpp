@@ -8,7 +8,6 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
     self = new Peer(selfName, this);
     organizer = NULL;
     sharedKey = new SharedKey();
-    sharedKeyCache = NULL;
     state = ParticipantSession::INIT;
     if (!organizerName.isEmpty()) {
         organizer = new Peer(organizerName, this);
@@ -19,7 +18,7 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
         // TODO: organizer discovery
     }
 
-    QObject::connect(this, SIGNAL(newSharedKey(int)), this, SLOT(renewSharedKey(int)));
+    QObject::connect(sharedKey, SIGNAL(updateComplete(int)), this, SLOT(renewSharedKey(int)));
 }
 
 ParticipantSession::State ParticipantSession::getState() const
@@ -100,12 +99,6 @@ int ParticipantSession::sendRejectJoinLocal()
 int ParticipantSession::recvRenewSharedKeyRemote(const int version)
 {
     if (version > sharedKey->getVersion()) {
-        if (sharedKeyCache != NULL) {
-            delete sharedKeyCache;
-        }
-        sharedKeyCache = new SharedKey();
-        sharedKeyCache->setVersion(version);
-
         // send interest for 1st chunk; communication layer automatically request remaining chunks
         this->sendFetchSharedKeyRemote(sharedKeyCache->getVersion(), 1);
         return 0;
@@ -128,26 +121,12 @@ int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNu
                                             const int chunkSize, const std::string &chunkData)
 {
     QByteArray qChunkData(chunkData.c_str());
-    if (sharedKeyCache != NULL && version == sharedKeyCache->getVersion()) {
-        sharedKeyCache->setSize(chunkSize);
-        sharedKeyCache->saveChunk(chunkNum, qChunkData);
-
-        if (sharedKeyCache->isComplete()) {
-            emit newSharedKey(sharedKeyCache->getVersion());
-        }
-        return 0;
-    } else {
-        return -1;
-    }
+    return sharedKey->updateChunk(version, chunkNum, chunkSize, chunkData)
 }
 
 void ParticipantSession::renewSharedKey(int version)
 {
     if (version > sharedKey->getVersion()) {
-        delete sharedKey;
-        sharedKey = sharedKeyCache;
-        sharedKeyCache = NULL;
-
         this->sendRenewSharedKeyLocal();
     }
 }
@@ -166,6 +145,17 @@ int ParticipantSession::recvFetchSharedKeyLocal(int version, int chunkNum)
     } else {
         return -1;
     }
+}
+
+int recvFetchPublicKeyRemote(const std::string &peerName, int &version, 
+                             int &chunkNum, std::string &buffer)
+{
+    return 0;    
+}
+
+int recvPublicKeyRemote()
+{
+    return 0;
 }
 
 #if WAF

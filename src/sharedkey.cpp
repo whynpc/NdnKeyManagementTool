@@ -1,80 +1,92 @@
 #include "sharedkey.h"
 
-SharedKey::SharedKey()
+SharedKey::SharedKey(QObject *parent) 
+    : ContentObject(parent), version(0)
 {
-    version = 0;
+
 }
 
-int SharedKey::getVersion() const
+int SharedKey::create()
 {
-    return version;
+    QByteArray dummyKey("sharedkey");
+    updateChunk(1, 1, 1, dummyKey);
 }
 
-void SharedKey::setVersion(const int version)
+int SharedKey::renew()
 {
-    this->version = version;
+    QByteArray dummyKey("sharedkey");
+    updateChunk(version + 1, 1, 1, dummyKey);
 }
 
-int SharedKey::genNewSharedKey()
-{
-    version = 1;
-    size = 1;
-    // TODO: fill in chunk content with some crypto algorithm
-    content.clear();
-    QByteArray key("abcde");
-    content.insert(1, key);
-    return version;
-}
-
-int SharedKey::readChunk(const int chunkNum, QByteArray outputBuffer) const
+int SharedKey::readChunk(const int chunkNum, QByteArray &outputBuffer)
 {
     if (content.contains(chunkNum)) {
-        outputBuffer.push_back(content[chunkNum]);
-        return content[chunkNum].length();
+        outputBuffer.push_back(content[chunkNum]->data());
+        return content[chunkNum]->length();
     } else {
         return -1;
     }
 }
 
-int SharedKey::getSize() const
+int SharedKey::writeChunkCache(const int version, const int chunkNum, const int chunkSize, 
+                               const QByteArray &chunkData)
 {
-    return size;
-}
-
-void SharedKey::setSize(const int size)
-{
-    this->size = size;
-}
-
-void SharedKey::renew()
-{
-    size = 0;
-    content.clear();
-}
-
-bool SharedKey::isComplete() const
-{
-    if (size > 0) {
-        for (int i = 1; i <= size; i++) {
-            if (!content.contains(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    return false;
-}
-
-int SharedKey::saveChunk(const int chunkNum, const QByteArray &chunkData)
-{
-    if (content.contains(chunkNum)) {
-        // do nothing
+    if (cacheVersion == 0) {
+            // current cache is empty
+        cacheVersion = version;
+        cacheChunkSize = chunkSize;
+        cache.insert(chunkNum, new QByteArray(chunkData));
     } else {
-        QByteArray key(chunkData);
-        content.insert(chunkNum, key);
+            // existing partial chunks in cahce
+        if (version == cacheVersion) {
+            if (!cache.contains(cacheNum)) {
+                cache.insert(chunkNum, new QByteArray(chunkData));
+            }
+        } else {
+                // version > cacheVersion : new update occurs before last update finish
+                // first, clear stale cache
+            for (int i = 1; i <= cacheChunkSize; i ++) {
+                if (cache.contains(i)) {
+                    QByteArray *chunk = cache[i];
+                    cache.remove(i);
+                    delete chunk;
+                }
+            }
+                // then, insert new data into cache
+            cacheVersion = version;
+            cacheChunkSize = chunkSize;
+            cache.insert(chunkNum, new QByteArray(chunkData));
+        }
     }
     return 0;
 }
+
+bool SharedKey::update()
+{
+    for (int i = 1; i <= cacheChunkSize; ++i) {
+        if (!cache.contains(i)) {
+            return false;
+        }
+    }
+        // replace content with cache
+    for (int i = 1; i <= chunkSize; ++i) {
+        QByteArray *chunk = content[i];
+        content.remove(i);
+        delete chunk;
+    }
+    for (int i = 1; i <= cacheChunkSize; ++i) {
+        QByteArray *chunk = cache[i];
+        content.insert(i, chunk);
+        cache.remove(i);
+    }
+    version = cacheVersion;
+    cacheVersion = 0;
+    chunkSize = cacheChunkSize;
+    cacheChunkSize = 0; 
+    
+    return true;
+}
+
 
 #if WAF
 #include "sharedkey.moc"

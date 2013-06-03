@@ -5,7 +5,7 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
     QObject(parent), name(sessionName), appName(applicationName)
 {
     self = new Peer(selfName, this);
-    sharedKey = NULL;
+    sharedKey = new SharedKey(this);
     // TODO: publish data: /prefix/self-name/
     // TODO: publish data for organizer discovery
 }
@@ -65,14 +65,14 @@ int OrganizerSession::crateSharedKey()
 {
     if (sharedKey == NULL) {
         sharedKey = new SharedKey();
-        sharedKey->genNewSharedKey();
+        sharedKey->create();
     }
     return 0;
 }
 
 int OrganizerSession::renewSharedKey(const int currentVersion) {
     if (currentVersion == sharedKey->getVersion()) {
-        sharedKey->genNewSharedKey();
+        sharedKey->renew();
         this->sendRenewSharedKeyRemote();
     }
     return 0;

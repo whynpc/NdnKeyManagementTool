@@ -22,25 +22,25 @@ public:
     int crateSharedKey();
     int renewSharedKey(const int currentVersion);
 
-    // recv Create Shared Key Interest from application
+        // recv Create Shared Key Interest from application
     int recvCreateSharedKeyLocal();
-    // recv Renew Shared Key Interest from application
+        // recv Renew Shared Key Interest from application
     int recvRenewSharedKeyLocal(const int currentVersion);
-    // recv Accept Interest from application
+        // recv Accept Interest from application
     int recvAcceptJoinLocal(const std::string &peerName);
-    // recv Reject Interest from application
+        // recv Reject Interest from application
     int recvRejectJoinLocal(const std::string &peerName);
-    // recv Fetch Shared Key Interest from application
+        // recv Fetch Shared Key Interest from application
     int recvFetchSharedKeyLocal(int &version, int &chunkNum);
-    // recv Join Interest from participant
+        // recv Join Interest from participant
     int recvJoinRemote(const std::string &peerName);
-    // recv Fetch Shared Key Interest from participant
+        // recv Fetch Shared Key Interest from participant
     int recvFecthSharedKeyRemote(const std::string &peerName, int &version, int &chunkNum,
                                  std::string &buffer);
-    // recv Fetch Public Key from participant
+        // recv Fetch Public Key Interest from participant
     int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum,
                                  std::string &buffer);
-// recv Public Key Data from participant
+        // recv Public Key Data from participant
     int recvPublicKeyRemote();
     
 

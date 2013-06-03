@@ -4,26 +4,20 @@
 #include <QByteArray>
 #include <QHash>
 
-class SharedKey
+class SharedKey : public ContentObject
 {
 public:
-    explicit SharedKey();
+    explicit SharedKey(QObject *parent);
 
-    int genNewSharedKey();
-    int readChunk(const int chunkNum, QByteArray outputBuffer) const;
-    int saveChunk(const int chunkNum, const QByteArray &chunkData);
-    void renew();
-    bool isComplete() const;
-
-    int getVersion() const;
-    void setVersion(const int version);
-    int getSize() const;
-    void setSize(const int size);
+// The following two functions used by organizer only
+    int create();
+    int renew();
 
 private:
-    int version;
-    QHash<int, QByteArray> content;
-    int size;
+    QHash<int, QByteArray *> content;    
+    QHash<int, QByteArray *> cache;
+    int cacheVersion;
+    int cacheChunkSize;
 };
 
 #endif // SHAREDKEY_H
