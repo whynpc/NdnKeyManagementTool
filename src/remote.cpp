@@ -3,10 +3,21 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string.hpp>
 #include <vector>
 #include "remote.hpp"
+#include "organizersession.h"
+#include "participantsession.h"
+#include "context.h"
 using namespace std;
 
+remote *remote::Instance()
+{
+    if (!_instance) {
+     		_instance = new remote();
+    }
+    return _instance;
+}
 
 int remote::split( string& str, vector<string>& ret_, string sep)
 {
@@ -50,7 +61,7 @@ void remote::fetchSharedKey(std::string app, std::string session,
 		prefix.append(session);
     std::string endpoint("shared-key");
     std::string action("fetch");
-    Init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,consumer,organizer,endpoint,action);
 }
 
 void remote::fetchPublicKey(std::string app, std::string session,
@@ -61,7 +72,7 @@ void remote::fetchPublicKey(std::string app, std::string session,
 		prefix.append(session);
     std::string endpoint("public-key");
     std::string action("fetch");
-    Init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,consumer,organizer,endpoint,action);
 }
 
 void remote::updateSharedKey(std::string app, std::string session,
@@ -72,7 +83,7 @@ void remote::updateSharedKey(std::string app, std::string session,
 		prefix.append(session);
 		std::string endpoint("shared-key");
     std::string action("update");
-    Init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,consumer,organizer,endpoint,action);
 }
 
 void remote::joinMembership(std::string app, std::string session,
@@ -83,7 +94,7 @@ void remote::joinMembership(std::string app, std::string session,
 		prefix.append(session);
 		std::string endpoint("membership");
     std::string action("join");
-    Init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,consumer,organizer,endpoint,action);
 }
 
 void remote::acceptMembership(std::string app, std::string session,
@@ -94,7 +105,7 @@ void remote::acceptMembership(std::string app, std::string session,
 		prefix.append(session);
 		std::string endpoint("membership");
     std::string action("accept");
-    Init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,consumer,organizer,endpoint,action);
 }
 
 void remote::rejectMembership(std::string app, std::string session,
@@ -105,7 +116,7 @@ void remote::rejectMembership(std::string app, std::string session,
 		prefix.append(session);
 		std::string endpoint("membership");
     std::string action("reject");
-    Init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,consumer,organizer,endpoint,action);
 }
 
 int remote::init(std::string prefix,
@@ -168,7 +179,7 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     int version;
    	int flag; //1: first packet 0:later packets
     int seqnum = 0;
-    
+    int chunkSize = 0;
     if (splitPara.size() == 3){
         flag = 1;
         vector <string> tmp1,tmp2,tmp3;
@@ -177,10 +188,10 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
         split(splitPara[1], tmp2, "=");
         version = atoi(tmp2[1].c_str());
         split(splitPara[2], tmp3, "=");
-        chunk = atoi(tmp3[1].c_str());
-//        seqnum = 1;
+        chunkSize = atoi(tmp3[1].c_str());
+        seqnum = 1;
     }
-/*    else{
+    else{
         flag = 0;
         std::string tmp = name.getCompFromBackAsString(1);
         vector <string> chunkTmp;
@@ -188,7 +199,7 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
         seqnum = atoi(chunkTmp[1].c_str());
 //        cout<<"seqnum chunk"<<seqnum<<"  "<<chunk<<endl;
     }
- */
+
     OrganizerSession *oSession;
 		ParticipantSession *pSession;
 		Context::instance()->retrieveSession(app, session, &oSession, &pSession);
@@ -199,24 +210,24 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     	{
 				if (pSession)  
 				{
-    			pSession->recvPublicKeyRemote(version, sequm, chunk,
+    			pSession->recvPublicKeyRemote(version, seqnum, chunkSize,
         	string ((char*)Ccnx::head (*content), content->size ()));    			
         }
 				if (oSession)  
 				{
-    			oSession->recvPublicKeyRemote(version, sequm, chunk,
+    			oSession->recvPublicKeyRemote(version, seqnum, chunkSize,
         	string ((char*)Ccnx::head (*content), content->size ()));    			
         }		  		
     	}
     	 
    		if (endPoint.compare("shared-key") == 0)
       {
-    		pSession->recvSharedKeyRemote(version, sequm, chunk,
+    		pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
         string ((char*)Ccnx::head (*content), content->size ()));    			
       }
     }
 
-    for (seqnum = 1; seqnum < chunk; seqnum++)
+    for (seqnum = 1; seqnum < chunkSize; seqnum++)
     {
 	    interestName = getBaseName(name);
   	  interestName.appendComp("v="+boost::lexical_cast <string>(version));

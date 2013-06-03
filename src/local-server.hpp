@@ -13,7 +13,7 @@ class localServer
 {
 public:
     static localServer *instance() {
-        if (_instance == NULL) {
+        if (!_instance) {
      		_instance = new localServer();
         }
         return _instance;
@@ -31,7 +31,7 @@ private:
   int chunkSize;
   int chunkNum;
   int version;
-  static localServer *_instance = NULL;
+  static localServer *_instance;
 //private:
 //	map<std::string,std::string> sessionInfo;
 };
