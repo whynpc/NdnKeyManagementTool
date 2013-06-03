@@ -12,13 +12,14 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 
 int OrganizerSession::recvJoinRemote(const std::string &peerName)
 {
-    if (blacklist.contains(peerName)) {
+    QString qPeerName(peerName.c_str());
+    if (blacklist.contains(qPeerName)) {
         // TODO: possible to send reject later
-    } else if(participants.contains(peerName) || candidates.contains(peerName)) {
+    } else if(participants.contains(qPeerName) || candidates.contains(qPeerName)) {
         // do nothing
     } else {
-        Peer *peer = new Peer(peerName, this);
-        candidates.insert(peerName, peer);
+        Peer *peer = new Peer(qPeerName, this);
+        candidates.insert(qPeerName, peer);
     }
     return 0;
 }
@@ -63,10 +64,7 @@ int OrganizerSession::sendRejectJoinRemote(const QString &peerName)
 
 int OrganizerSession::crateSharedKey()
 {
-    if (sharedKey == NULL) {
-        sharedKey = new SharedKey();
-        sharedKey->create();
-    }
+    sharedKey->create();
     return 0;
 }
 
@@ -100,12 +98,12 @@ int OrganizerSession::recvRenewSharedKeyLocal(const int currentVersion)
     return 0;
 }
 
-int OrganizerSession::recvFecthSharedKeyRemote(const QString &peerName,
-                                               const int version,
-                                               const int chunkNum)
+int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int &version, 
+                                               int &chunkNum, int &chunkSize, std::string &buffer)
 {
+    QString qPeerName(peerName.c_str());   
     // TODO: check version & chunkNum
-    if (participants.contains(peerName)) {
+    if (participants.contains(qPeerName)) {
         // TODO: send chunk
         // Use sharedKey.getChunk(chunkNum)
     } else {
@@ -114,15 +112,17 @@ int OrganizerSession::recvFecthSharedKeyRemote(const QString &peerName,
     return 0;
 }
 
-int OrganizerSession::recvAcceptJoinLocal(const QString &peerName)
+int OrganizerSession::recvAcceptJoinLocal(const std::string &peerName)
 {
-    this->acceptJoin(peerName);
+    QString qPeerName(peerName.c_str());
+    this->acceptJoin(qPeerName);
     return 0;
 }
 
-int OrganizerSession::recvRejectJoinLocal(const QString &peerName)
+int OrganizerSession::recvRejectJoinLocal(const std::string &peerName)
 {
-    this->rejectJoin(peerName);
+    QString qPeerName(peerName.c_str());
+    this->rejectJoin(qPeerName);
     return 0;
 }
 

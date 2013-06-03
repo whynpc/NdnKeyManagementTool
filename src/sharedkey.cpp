@@ -1,8 +1,9 @@
 #include "sharedkey.h"
 
 SharedKey::SharedKey(QObject *parent) 
-    : ContentObject(parent), version(0)
+    : ContentObject(parent)
 {
+    this->version = 0;    
 
 }
 
@@ -39,7 +40,7 @@ int SharedKey::writeChunkCache(const int version, const int chunkNum, const int 
     } else {
             // existing partial chunks in cahce
         if (version == cacheVersion) {
-            if (!cache.contains(cacheNum)) {
+            if (!cache.contains(chunkNum)) {
                 cache.insert(chunkNum, new QByteArray(chunkData));
             }
         } else {

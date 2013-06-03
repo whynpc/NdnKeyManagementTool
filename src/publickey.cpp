@@ -1,10 +1,9 @@
 #include "publickey.h"
 
 PublicKey::PublicKey(QObject *parent) 
-    : ContentObject(parent), version(0)
+    : ContentObject(parent)
 
 {
-
 }
 
 int PublicKey::readChunk(const int chunkNum, QByteArray &outputBuffer)
@@ -25,3 +24,8 @@ bool PublicKey::update()
     return false;    
 }
 
+
+#if WAF
+#include "publickey.moc"
+#include "publickey.cpp.moc"
+#endif

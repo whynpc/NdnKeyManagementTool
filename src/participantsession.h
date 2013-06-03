@@ -5,12 +5,9 @@
 #include <QString>
 #include <QByteArray>
 #include <string>
+
 #include "sharedkey.h"
 #include "peer.h"
-
-
-class Peer;
-class Application;
 
 class ParticipantSession : public QObject
 {
@@ -41,7 +38,8 @@ public:
 
     int recvRenewSharedKeyRemote(const int version);
 // recv Fetch Public Key Interest from organizer/participant
-    int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum, int &chunkSize, std::string &buffer);
+    int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum, 
+                                 int &chunkSize, std::string &buffer);
 // recv Public Key Data from organizer/participant
     int recvPublicKeyRemote(const int version, const int chunkNum, 
                             const int chunkSize, const std::string &chunkData);

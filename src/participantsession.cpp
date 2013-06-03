@@ -7,7 +7,7 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
 {
     self = new Peer(selfName, this);
     organizer = NULL;
-    sharedKey = new SharedKey();
+    sharedKey = new SharedKey(this);
     state = ParticipantSession::INIT;
     if (!organizerName.isEmpty()) {
         organizer = new Peer(organizerName, this);
@@ -99,8 +99,8 @@ int ParticipantSession::sendRejectJoinLocal()
 int ParticipantSession::recvRenewSharedKeyRemote(const int version)
 {
     if (version > sharedKey->getVersion()) {
-        // send interest for 1st chunk; communication layer automatically request remaining chunks
-        this->sendFetchSharedKeyRemote(sharedKeyCache->getVersion(), 1);
+        // send interest for 1st chunk; communication layer automatically request remaining chunks        
+        this->sendFetchSharedKeyRemote(sharedKey->getVersion(), 1);
         return 0;
     } else {
         return -1;
@@ -121,7 +121,7 @@ int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNu
                                             const int chunkSize, const std::string &chunkData)
 {
     QByteArray qChunkData(chunkData.c_str());
-    return sharedKey->updateChunk(version, chunkNum, chunkSize, chunkData)
+    return sharedKey->updateChunk(version, chunkNum, chunkSize, qChunkData);
 }
 
 void ParticipantSession::renewSharedKey(int version)
@@ -137,7 +137,7 @@ int ParticipantSession::sendRenewSharedKeyLocal()
     return 0;
 }
 
-int ParticipantSession::recvFetchSharedKeyLocal(int version, int chunkNum)
+int ParticipantSession::recvFetchSharedKeyLocal(int &version, int &chunkNum)
 {
     if (version != sharedKey->getVersion()) {
         // send chunk

@@ -41,6 +41,6 @@ int ContentObject::updateChunk(const int version, const int chunkNum,
 }
 
 #if WAF
-#include "sharedkey.moc"
-#include "sharedkey.cpp.moc"
+#include "contentobject.moc"
+#include "contentobject.cpp.moc"
 #endif

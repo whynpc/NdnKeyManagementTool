@@ -1,10 +1,13 @@
 #ifndef CONTENTOBJECT_H
 #define CONTENTOBJECT_H
 
+#include <QObject>
 #include <QByteArray>
 
 class ContentObject : public QObject
 {
+    Q_OBJECT
+
 public:
     explicit ContentObject(QObject *parent);
     
@@ -17,7 +20,7 @@ public:
     int updateChunk(const int version, const int chunkNum, 
                     const int chunkSize, const QByteArray &chunkData);
 
-signal:
+signals:
 // notification for finishing recv all chunks of a new version
     void updateComplete(const int version);    
 
@@ -25,7 +28,7 @@ protected:
 // save the recved chunk in cache
 // potentially clear state cache for new updates
 // invoked only when version > this.version
-    virtual int writeChunkCache(const int version, const int chunkNum, const int chunkSize 
+    virtual int writeChunkCache(const int version, const int chunkNum, const int chunkSize, 
                                 const QByteArray &chunkData) = 0;
 // check whether has got all the chunks in cache
 // if so, replace content with new data in cache & return true
