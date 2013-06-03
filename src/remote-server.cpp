@@ -2,11 +2,16 @@
 #include <iostream>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 #include <vector>
 #include "remote-server.hpp"
+#include "organizersession.h"
+#include "participantsession.h"
+#include "context.h"
 
 using namespace std;
 
+/*
 int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)            
 {                                                                            
 	  RSA *keypair;                                                            
@@ -33,7 +38,7 @@ int remoteServer::do_decrypt(char **to, char *from, unsigned char *key,int len)
 		return encrypt_len;                                                         
 	                                                                              
 }                                                                               
-
+*/
 
 Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
     int flag;
@@ -59,10 +64,10 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
         	  chunkNum = 0;        	  
         	  if (oSession)
         	  {
-						  oSession->recvFecthSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
+						  oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
             }
-            char *from = ret.c_str();
-            char *to = NULL;
+//            char *from = ret.c_str();
+//            char *to = NULL;
 //          get public key
 //            do_encrypt(&to, from,key,int len)
             std::string tmp = "code=0,version=";
@@ -84,10 +89,10 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
             chunkNum = atoi(str1[1].c_str());
             if (oSession)
             {
-				  		oSession->recvFecthSharedKeyRemote(consumer, version, chunkNum, chunkSize, ret);
+				  		oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum, chunkSize, ret);
 				  	}
-				  	char *from = ret.c_str();
-            char *to = NULL;
+//				  	char *from = ret.c_str();
+//            char *to = NULL;
 //          get public key
 //            do_encrypt(&to, from,key,int len)
         }
@@ -133,11 +138,11 @@ Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
         	  chunkNum = 0;        	  
         	  if (oSession)
         	  {
-						  oSession->recvFecthPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
+						  oSession->recvFetchPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
             }
             if (pSession)
         	  {
-						  pSession->recvFecthPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
+						  pSession->recvFetchPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
             }
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
@@ -158,11 +163,11 @@ Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
             chunkNum = atoi(str1[1].c_str());
             if (oSession)
         	  {
-						  oSession->recvFecthPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
+						  oSession->recvFetchPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
             }
             if (pSession)
         	  {
-						  pSession->recvFecthPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
+						  pSession->recvFetchPublicKeyRemote(consumer, version, chunkNum,chunkSize, ret);
             }
         }
     }
@@ -209,7 +214,7 @@ void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     std::string app;
     std::string session;
     vector <string> app_session;
-    split(prefix, app_session, "_");        	
+    boost::split(app_session, prefix,boost::is_any_of("_"));        	
     app = app_session[0];
     session = app_session[1];	
 		Context::instance()->retrieveSession(app, session, &oSession, &pSession);

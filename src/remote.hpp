@@ -1,8 +1,13 @@
+#ifndef REMOTE
+#define REMOTE
+
 #include <ccnx-cpp.h>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <vector>
-
+#include "organizersession.h"
+#include "participantsession.h"
+#include "context.h"
 //#include "remote-client.hpp"
 
 using namespace std;
@@ -12,12 +17,7 @@ using namespace Ccnx;
 class remote
 {
 public:
-    static remote *instance() {
-        if (_instance == NULL) {
-     		_instance = new remote();
-        }
-        return _instance;
-    }
+  static remote *Instance(); 
 	int split( string& str, vector<string>& ret_, string sep);
 	int init(std::string prefix,
              std::string consumer,std::string organizer,std::string
@@ -39,12 +39,14 @@ public:
     void rejectMembership(std::string app, std::string session,
                                   std::string consumer,std::string organizer);
 private:
-//	 Ccnx::Name InterestBaseName;
+   Ccnx::Name interestName;
    Ccnx::Wrapper handler;
-   static remote *_instance = NULL;
-//   OrganizerSession *orgsession;
-//	 ParticipantSession *partsession;
+   static remote* _instance;
+   OrganizerSession *oSession;
+	 ParticipantSession *pSession;
 //	 int chunk;
  //  std::string myname;
     //  std::string payload;
 };
+
+#endif //remote
