@@ -13,62 +13,124 @@ using namespace std;
 using namespace Ccnx;
 
 Ccnx::Name localServer::parseSession(Ccnx::Name name){
-  std::string action = name.getCompAsString(5); //action
+  std::string action = name.getCompAsString(6); //action
+  std::string organizer = name.getCompAsString(4); //organizer
+  std::string participant = name.getCompAsString(5); //participant
+  std::string appname = name.getCompAsString(2); //app
   Ccnx::Name dataName = name;
+  Application *application;
+  Context::instance()->getApplication(appname);
+  	 	
+  vector<std::string> tmp;
+  std::string session = tmp[1];
+  boost::split(tmp,action,boost::is_any_of("_"));            
   if (boost::starts_with(action,"create="))
     {
-      vector<std::string> tmp;
-      //TODO: add to map
-      //      boost::split(tmp,action,boost::is_any_of("="));
-      //   	sessionInfo.insert(pair<std::string,std::string>(tmp[1],""));
       dataName.appendComp("code=0");
+      application->createOrganizerSession(session,organizer);
+    }
+  if (boost::starts_with(action,"participate="))
+    {
+      dataName.appendComp("code=0");
+      application->createParticipantSession(session,participant,organizer);
     }
   if (boost::starts_with(action,"destroy="))
     {
-      vector<std::string> tmp;
-      //TODO: add to map
-      //      boost::split(tmp,action,boost::is_any_of("="));
-      //     sessionInfo.erase(tmp[1]);
       dataName.appendComp("code=0");
+      application->destroyOrganizerSession(session);
+    }
+  if (boost::starts_with(action,"quit="))
+    {
+      dataName.appendComp("code=0");
+      application->destroyParticipantSession(session);
     }
   if (boost::starts_with(action,"join="))
     {
-      //TODO: send join request to remote
+      Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
+			if (pSession)
+			{
+				pSession->recvLocal();
+			}
+      dataName.appendComp("code=0");
     }
   return dataName;
 }
 
 Ccnx::Name localServer::parseSharedKey(Ccnx::Name name, 
-                                       char *dataContent)
+                                       std::string &ret)
 {
-  std::string action = name.getCompAsString(5); //action
+	std::string appname = name.getCompAsString(2); //app
+  std::string action = name.getCompAsString(7); //action
   Ccnx::Name dataName = name;
+  vector<std::string> tmp;
+  boost::split(tmp,action,boost::is_any_of("="));
+  std::string session = tmp[1];
+  Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
   if (boost::starts_with(action,"create="))
     {
-      vector<std::string> tmp;
-      boost::split(tmp,action,boost::is_any_of("="));
-      //TODO: generate a shared-key
-      //TODO: update shared-key      
-      //      sessionInfo.erase(tmp[1]);
-      //    	sessionInfo.insert(pair<std::string,std::string>(tmp[1],""));
-      // dataContent = "xxxx"; //shared-key
+      if (oSession)
+      {
+      	oSesssion->recvCreateSharedKeyLocal();
+      }
       dataName.appendComp("code=0");
     }
   if (boost::starts_with(action,"update="))
     {
-      vector<std::string> tmp;
-      boost::split(tmp,action,boost::is_any_of("="));
-      //TODO: generate a shared-key
-      //TODO: update shared-key      
-      //      sessionInfo.erase(tmp[1]);
-      //    	sessionInfo.insert(pair<std::string,std::string>(tmp[1],""));
-      // dataContent = "xxxx"; //shared-key
+      int version = atoi(tmp[2].c_str())
+      orgsession->recvRenewSharedKeyLocal(version);
       dataName.appendComp("code=0");
     }
   if (action.compare("fetch") == 0)
     {
-      //TODO: send fetch request to remote
-    	
+        std::string lastComponent = name.getCompAsString(size-2);
+        int flag = 0;
+        if (boost::starts_with(lastComponent,"chunk="))
+        {
+            flag = 1;  //later packet
+        }
+        else{
+            flag = 0;  //para
+        }
+        //  
+        if (flag == 0){
+        	  chunkSize = 0;
+        	  chunkNum = 0;        	  
+        	  version;
+        	  if (oSession)
+        	  {
+						  oSession->recvFetchSharedKeyLocal(version, chunkNum, chunkSize, ret);
+            }
+        	  if (pSession)
+        	  {
+						  pSession->recvFetchSharedKeyLocal(version, chunkNum, chunkSize, ret);
+            }
+            std::string tmp = "code=0,version=";
+            std::string v = boost::lexical_cast <string>(version);
+            tmp.append(v);
+            tmp.append(",chunk=");
+            std::string ch = boost::lexical_cast <string>(chunkSize);
+            tmp.append(ch);
+            dataName.appendComp(tmp);
+        }
+        else{
+            dataName= name;
+            vector<std::string> str1;
+            boost::split(str1,lastComponent,boost::is_any_of("="));
+            std::string versionComponent = name.getCompAsString(size-3);
+            vector<std::string> str2;
+            boost::split(str2,versionComponent,boost::is_any_of("="));
+            version = atoi(str2[1].c_str());
+            chunkNum = atoi(str1[1].c_str());
+        	  if (oSession)
+        	  {
+						  oSession->recvFetchSharedKeyLocal(version, chunkNum, chunkSize, ret);
+            }
+        	  if (pSession)
+        	  {
+						  pSession->recvFetchSharedKeyLocal(version, chunkNum, chunkSize, ret);
+            }
+        }
+
     }
   return dataName;
 }
@@ -82,24 +144,22 @@ void localServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     dataName = parseSession(name);
   }
   if (endPoint.compare("shared-key") == 0){
-    // dataName = parseSharedKey(name,&dataContent);
+     dataName = parseSharedKey(name,&dataContent);
   }
-  //TODO: fetch file if needed; change parse functions
-  ostringstream os;
-  os << "C++ LINE #"  << endl;
-  cout<<"dataName   "<<dataName<<endl;
-  handler.publishData (dataName, os.str (), 5);
+  handler.publishData (dataName, dataContent, 5);
 }
 
-int  localServer::init(std::string prefix){	
-	
-  InterestBaseName.appendComp(prefix);
-  cout<<"interstbasename  "<<InterestBaseName<<endl;
-  handler.setInterestFilter (InterestBaseName, boost::bind (&localServer::OnInterest, this, _1, _2));
-  while (true)
+int  localServer::init(std::string appName){
+
+	Ccnx::Name interestBaseName = Ccnx::Name();
+    interestBaseName.appendComp("Local");
+    interestBaseName.appendComp("KeyManagementTool");
+    interestBaseName.appendComp(appName);
+    handler.setInterestFilter (interestBaseName, boost::bind (&localServer::OnInterest, this, _1, _2));
+    while (true)
     {
       sleep (1);
     }
-  return 0;
+    return 0;
 }
 

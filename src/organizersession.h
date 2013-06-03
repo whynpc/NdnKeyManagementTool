@@ -29,6 +29,7 @@ public:
         // recv Accept Interest from application
     int recvAcceptJoinLocal(const std::string &peerName);
         // recv Reject Interest from application
+
     int recvRejectJoinLocal(const std::string &peerName);
         // recv Fetch Shared Key Interest from application
     int recvFetchSharedKeyLocal(int &version, int &chunkNum);
@@ -42,7 +43,7 @@ public:
                                  std::string &buffer);
         // recv Public Key Data from participant
     int recvPublicKeyRemote();
-    
+
 
 
 private:

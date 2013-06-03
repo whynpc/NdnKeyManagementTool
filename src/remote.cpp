@@ -42,69 +42,86 @@ int remote::split( string& str, vector<string>& ret_, string sep)
     return 0;
 }
 
-void remote::fetchSharedKey(std::string prefix,
+void remote::fetchSharedKey(std::string app, std::string session,
                             std::string consumer,std::string organizer)
 {
+		std::string prefix(app);
+		prefix.append("_");
+		prefix.append(session);
     std::string endpoint("shared-key");
     std::string action("fetch");
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-void remote::fetchPublicKey(std::string prefix,
+void remote::fetchPublicKey(std::string app, std::string session,
                             std::string consumer,std::string organizer)
-{
+{		
+		std::string prefix(app);
+		prefix.append("_");
+		prefix.append(session);
     std::string endpoint("public-key");
     std::string action("fetch");
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-void remote::updateSharedKey(std::string prefix,
+void remote::updateSharedKey(std::string app, std::string session,
                              std::string consumer,std::string organizer)
 {
-    std::string endpoint("shared-key");
+ 		std::string prefix(app);
+		prefix.append("_");
+		prefix.append(session);
+		std::string endpoint("shared-key");
     std::string action("update");
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-void remote::joinMembership(std::string prefix,
+void remote::joinMembership(std::string app, std::string session,
                             std::string consumer,std::string organizer)
 {
-    std::string endpoint("membership");
+ 		std::string prefix(app);
+		prefix.append("_");
+		prefix.append(session);
+		std::string endpoint("membership");
     std::string action("join");
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-void remote::acceptMembership(std::string prefix,
+void remote::acceptMembership(std::string app, std::string session,
                               std::string consumer,std::string organizer)
 {
-    std::string endpoint("membership");
+ 		std::string prefix(app);
+		prefix.append("_");
+		prefix.append(session);
+		std::string endpoint("membership");
     std::string action("accept");
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-void remote::rejectMembership(std::string prefix,
+void remote::rejectMembership(std::string app, std::string session,
                               std::string consumer,std::string organizer)
 {
-    std::string endpoint("membership");
+ 		std::string prefix(app);
+		prefix.append("_");
+		prefix.append(session);
+		std::string endpoint("membership");
     std::string action("reject");
     Init(prefix,consumer,organizer,endpoint,action);
 }
 
-int remote::Init(std::string prefix,
+int remote::init(std::string prefix,
                  std::string consumer,std::string organizer,std::string
                  endpoint,std::string action){
     
-    InterestBaseName = Ccnx::Name();
-    InterestBaseName.appendComp(prefix);
-    InterestBaseName.appendComp(consumer);
-    InterestBaseName.appendComp(organizer);
-    InterestBaseName.appendComp(endpoint);
-    InterestBaseName.appendComp(action); //action
-    InterestBaseName.appendComp("xxx"); //rand+auth_token/
+		Ccnx::Name interestBaseName = Ccnx::Name();
+    interestBaseName.appendComp(prefix);
+    interestBaseName.appendComp(consumer);
+    interestBaseName.appendComp(organizer);
+    interestBaseName.appendComp(endpoint);
+    interestBaseName.appendComp(action); //action
+    interestBaseName.appendComp("xxx"); //rand+auth_token/
     //    InterestBaseName = Ccnx::Name (interestName);
-    cerr << ">> C++ " << InterestBaseName << endl;
     Ccnx::Wrapper handler;
-    handler.sendInterest (InterestBaseName,
+    handler.sendInterest (interestBaseName,
                           Ccnx::Closure (boost::bind (&remote::runDataCallback, this, _1, _2),
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
                           Ccnx::Selectors ().scope (Ccnx::Selectors::SCOPE_LOCAL_HOST));
@@ -115,13 +132,32 @@ int remote::Init(std::string prefix,
 }
 
 
+Ccnx::Name remote::getBaseName(Ccnx::Name name)
+{
+    Ccnx::Name base = Ccnx::Name();
+	  for (int i = 0; i <=4 ;i++)
+	  {
+	  	base.appendComp(name.getCompAsString(i));
+	  }
+	  return base;
+}
+
 void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
 {
     Ccnx::BytesPtr content = pco->contentPtr ();
-    // TODO: call upper layer
+    std::string action = name.getCompAsString(4); //action
+    std::string consumer = name.getCompAsString(1); //consumer
+    std::string producer = name.getCompAsString(2); //producer
+    std::string endPoint = name.getCompAsString(3); //endpoint
+    std::string prefix = name.getCompAsString(0);
+    std::string app;
+    std::string session;
+    vector <string> app_session;
+    split(prefix, app_session, "_");        	
+    app = app_session[0];
+    session = app_session[1];
     
-    int size = name.size();
-    cout<<"data name"<<name<<endl;
+    int size = name.size();    
     std::string lastComponent =name.getCompAsString(size-1);
     vector <string> splitPara;
     split(lastComponent, splitPara, ",");
@@ -142,34 +178,55 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
         version = atoi(tmp2[1].c_str());
         split(splitPara[2], tmp3, "=");
         chunk = atoi(tmp3[1].c_str());
-        //      cout<<splitPara[0]<<"  "<<splitPara[1]<<"  "<<splitPara[2]<<endl;
-        //     cout<<code<<"  "<<version<<"  "<<chunk<<endl;
-        seqnum = 1;
+//        seqnum = 1;
     }
-    else{
+/*    else{
         flag = 0;
         std::string tmp = name.getCompFromBackAsString(1);
         vector <string> chunkTmp;
         split(tmp, chunkTmp, "=");
         seqnum = atoi(chunkTmp[1].c_str());
-        cout<<"seqnum chunk"<<seqnum<<"  "<<chunk<<endl;
-        if (seqnum >= chunk){
-            return;
-        }
+//        cout<<"seqnum chunk"<<seqnum<<"  "<<chunk<<endl;
     }
-    Ccnx::Name interestName;
-    
-    interestName = InterestBaseName;
-    interestName.appendComp("v="+boost::lexical_cast <string>(version));
-    interestName.appendComp("chunk="+(boost::lexical_cast <string>(seqnum+1)));
-    interestName.appendComp("xxx");
-    
-    cerr << ">> interest name " << interestName << endl; // a shortcut to construct name
-    handler.sendInterest (interestName,
+ */
+    OrganizerSession *oSession;
+		ParticipantSession *pSession;
+		Context::instance()->retrieveSession(app, session, &oSession, &pSession);
+
+    if (action.compare("fetch") == 0)
+    {
+    	if (endPoint.compare("public-key") == 0)
+    	{
+				if (pSession)  
+				{
+    			pSession->recvPublicKeyRemote(version, sequm, chunk,
+        	string ((char*)Ccnx::head (*content), content->size ()));    			
+        }
+				if (oSession)  
+				{
+    			oSession->recvPublicKeyRemote(version, sequm, chunk,
+        	string ((char*)Ccnx::head (*content), content->size ()));    			
+        }		  		
+    	}
+    	 
+   		if (endPoint.compare("shared-key") == 0)
+      {
+    		pSession->recvSharedKeyRemote(version, sequm, chunk,
+        string ((char*)Ccnx::head (*content), content->size ()));    			
+      }
+    }
+
+    for (seqnum = 1; seqnum < chunk; seqnum++)
+    {
+	    interestName = getBaseName(name);
+  	  interestName.appendComp("v="+boost::lexical_cast <string>(version));
+    	interestName.appendComp("chunk="+(boost::lexical_cast <string>(seqnum+1)));
+    	interestName.appendComp("xxx");
+      handler.sendInterest (interestName,
                           Ccnx::Closure (boost::bind (&remote::runDataCallback, this, _1, _2),
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
-                          Ccnx::Selectors ().scope (Ccnx::Selectors::SCOPE_LOCAL_HOST));
-    
+                          Ccnx::Selectors ().scope (Ccnx::Selectors::SCOPE_LOCAL_HOST));  
+    }
 }
 
 void remote::runTimeoutCallback(Name interest, const Closure &closure, Selectors selectors)
