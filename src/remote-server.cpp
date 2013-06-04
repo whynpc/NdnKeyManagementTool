@@ -3,6 +3,9 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 #include <vector>
 #include "remote-server.hpp"
 #include "organizersession.h"
@@ -11,41 +14,26 @@
 
 using namespace std;
 
-/*
-int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)            
-{                                                                            
-	  RSA *keypair;                                                            
-	  char *key2 = (char *)key;                                                
-    d2i_RSAPublicKey(&keypair,  & (const unsigned char *)key, len);          
-//    cout <<RSA_size(keypair)<<endl;                                        
-	  *to = (char *)malloc(RSA_size(keypair));                                 
-		int encrypt_len = RSA_public_encrypt(strlen(from), (unsigned char*)from, 
-		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);                 
-                                                                             
-		return encrypt_len;                                                      
-}                                                                            
 
-int remoteServer::do_decrypt(char **to, char *from, unsigned char *key,int len)               
-{                                                                               
-		RSA *keypair;                                                               
-	  char *key2 = (char *)key;                                                   
-    d2i_RSAPrivateKey(&keypair,  & (const unsigned char *)key, len);            
-//    cout <<RSA_size(keypair)<<endl;                                           
-	  *to = (char *)malloc(RSA_size(keypair));                                    
-		int encrypt_len = RSA_private_decrypt(strlen(from), (unsigned char*)from,   
-		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);                    
-                                                                                
-		return encrypt_len;                                                         
-	                                                                              
-}                                                                               
-*/
+int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)
+{
+    RSA *keypair;
+    char *key2 = (char *)key;                                                
+    d2i_RSAPublicKey(&keypair,  &(const unsigned char *)key, len);
+//    cout <<RSA_size(keypair)<<endl;                                        
+    *to = (char *)malloc(RSA_size(keypair));
+    int encrypt_len = RSA_public_encrypt(strlen(from), (unsigned char*)from,
+		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);
+                                                                             
+    return encrypt_len;
+}                                                                            
 
 Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
     int flag;
-    std::string consumer = name.getCompAsString(1); //consumer
-    std::string producer = name.getCompAsString(2); //producer
-    std::string endPoint = name.getCompAsString(3); //endpoint
-    std::string action = name.getCompAsString(4); //action
+//    std::string consumer = name.getCompAsString(1); //consumer
+//    std::string producer = name.getCompAsString(2); //producer
+//    std::string endPoint = name.getCompAsString(3); //endpoint
+ //   std::string action = name.getCompAsString(4); //action
 
     int size = name.size();
     Ccnx::Name dataName = name;
@@ -64,12 +52,12 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
         	  chunkNum = 0;        	  
         	  if (oSession)
         	  {
-						  oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
-            }
-//            char *from = ret.c_str();
-//            char *to = NULL;
+                  oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
+              }
+            char *from = (char *)ret.c_str();
+            char *to = NULL ;
 //          get public key
-//            do_encrypt(&to, from,key,int len)
+//           do_encrypt(&to, from,key,len);
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
             tmp.append(v);
@@ -89,12 +77,12 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
             chunkNum = atoi(str1[1].c_str());
             if (oSession)
             {
-				  		oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum, chunkSize, ret);
-				  	}
-//				  	char *from = ret.c_str();
-//            char *to = NULL;
-//          get public key
-//            do_encrypt(&to, from,key,int len)
+                oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum, chunkSize, ret);
+            }
+            char *from = (char *)ret.c_str();
+            char *to = NULL ;
+            //          get public key
+            //           do_encrypt(&to, from,key,len);
         }
     }
     else{
@@ -116,10 +104,10 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
 
 Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
     int flag;
-    std::string consumer = name.getCompAsString(1); //consumer
-    std::string producer = name.getCompAsString(2); //producer
-    std::string endPoint = name.getCompAsString(3); //endpoint
-    std::string action = name.getCompAsString(4); //action
+//    std::string consumer = name.getCompAsString(1); //consumer
+//    std::string producer = name.getCompAsString(2); //producer
+ //   std::string endPoint = name.getCompAsString(3); //endpoint
+  //  std::string action = name.getCompAsString(4); //action
 
     int size = name.size();
     Ccnx::Name dataName = name;
@@ -175,7 +163,7 @@ Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
 };
 
 Ccnx::Name remoteServer::parseMembership(Ccnx::Name name){
-    std::string action = name.getCompAsString(4); //action
+//    std::string action = name.getCompAsString(4); //action
     Ccnx::Name dataName = name;
     if (action.compare("join") == 0 ||
         action.compare("accept") == 0 ||
@@ -206,11 +194,11 @@ Ccnx::Name remoteServer::parseMembership(Ccnx::Name name){
 void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     Ccnx::Name dataName;
     //    cout<<name<<endl;
-    std::string consumer = name.getCompAsString(1); //consumer
-    std::string producer = name.getCompAsString(2); //producer
-    std::string endPoint = name.getCompAsString(3); //endpoint
-    std::string action = name.getCompAsString(4); //action
-    std::string prefix = name.getCompAsString(0);
+    consumer = name.getCompAsString(1); //consumer
+    producer = name.getCompAsString(2); //producer
+    endPoint = name.getCompAsString(3); //endpoint
+    action = name.getCompAsString(4); //action
+    prefix = name.getCompAsString(0);
     std::string app;
     std::string session;
     vector <string> app_session;
