@@ -42,7 +42,7 @@ public:
     int recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum, int &chunkSize,
                                  std::string &buffer);
         // recv Public Key Data from participant
-    int recvPublicKeyRemote(const int version, const int chunkNum,
+    int recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum,
                             const int chunkSize, const std::string &chunkData);
 
 

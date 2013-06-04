@@ -54,7 +54,7 @@ int Context::removeApplication(const QString &appName)
     }
 }
 
-void retrieveSession(const std::string &appName, const std::string &sessionName, 
+void Context::retrieveSession(const std::string &appName, const std::string &sessionName, 
 		     OrganizerSession **oSession, ParticipantSession **pSession) const
 {
     QString qAppName(appName.c_str());
@@ -63,7 +63,7 @@ void retrieveSession(const std::string &appName, const std::string &sessionName,
     *pSession = getParticipantSession(qAppName, qSessionName);
 }
 
-void retrieveApplication(const std::string &appName, Application **application) const
+void Context::retrieveApplication(const std::string &appName, Application **application) const
 {
     QString qAppName(appName.c_str());
     *application = getApplication(qAppName);

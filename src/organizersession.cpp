@@ -131,6 +131,20 @@ int OrganizerSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &
     return 0;
 }
 
+int OrganizerSession::recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum, 
+                                          const int chunkSize, const std::string &chunkData)
+{
+    return 0;
+}
+
+int OrganizerSession::recvFetchPublicKeyRemote(const std::string &peerName, int &version, int &chunkNum, 
+                                               int &chunkSize, std::string &buffer)
+{
+    return 0;
+}
+
+
+
 #if WAF
 #include "organizersession.moc"
 #include "organizersession.cpp.moc"
