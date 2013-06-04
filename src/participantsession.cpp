@@ -148,7 +148,7 @@ int ParticipantSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int
 }
 
 int ParticipantSession::recvFetchPublicKeyRemote(const std::string &peerName, int &version, 
-                             int &chunkNum, std::string &buffer)
+                                                 int &chunkNum, int &chunkSize, std::string &buffer)
 {
     return 0;    
 }
