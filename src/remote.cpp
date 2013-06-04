@@ -5,6 +5,9 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string.hpp>
 #include <vector>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 #include "remote.hpp"
 #include "organizersession.h"
 #include "participantsession.h"
@@ -51,6 +54,18 @@ int remote::split( string& str, vector<string>& ret_, string sep)
         }
     }
     return 0;
+}
+
+int do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len)
+{
+    RSA *keypair;
+    
+    d2i_RSAPrivateKey(&keypair,  & (const unsigned char *)key, keylen);
+   // cout<<encrypt_len<<"   "<<strlen(from)<<endl;
+    //    to = (char *)malloc(encrypt_len);
+    int decrypt_len = RSA_private_decrypt(encrypt_len, (unsigned char*)from,
+                                          (unsigned char*)(to), keypair, RSA_PKCS1_OAEP_PADDING);
+    return decrypt_len;
 }
 
 void remote::fetchSharedKey(std::string app, std::string session,
@@ -123,7 +138,7 @@ int remote::init(std::string prefix,
                  std::string consumer,std::string organizer,std::string
                  endpoint,std::string action){
     
-		Ccnx::Name interestBaseName = Ccnx::Name();
+    Ccnx::Name interestBaseName = Ccnx::Name();
     interestBaseName.appendComp(prefix);
     interestBaseName.appendComp(consumer);
     interestBaseName.appendComp(organizer);
@@ -201,8 +216,8 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     }
 
     OrganizerSession *oSession;
-		ParticipantSession *pSession;
-		Context::instance()->retrieveSession(app, session, &oSession, &pSession);
+    ParticipantSession *pSession;
+    Context::instance()->retrieveSession(app, session, &oSession, &pSession);
 
     if (action.compare("fetch") == 0)
     {
@@ -220,20 +235,24 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
         }		  		
     	}
     	 
-   		if (endPoint.compare("shared-key") == 0)
+      if (endPoint.compare("shared-key") == 0)
       {
+          //    do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len);  //how to get private key
+          if (pSession)
+          {
     		pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
-        string ((char*)Ccnx::head (*content), content->size ()));    			
+              string ((char*)Ccnx::head (*content), content->size ()));
+          }
       }
     }
 
     for (seqnum = 1; seqnum < chunkSize; seqnum++)
     {
-	    interestName = getBaseName(name);
-  	  interestName.appendComp("v="+boost::lexical_cast <string>(version));
+        interestName = getBaseName(name);
+        interestName.appendComp("v="+boost::lexical_cast <string>(version));
     	interestName.appendComp("chunk="+(boost::lexical_cast <string>(seqnum+1)));
     	interestName.appendComp("xxx");
-      handler.sendInterest (interestName,
+        handler.sendInterest (interestName,
                           Ccnx::Closure (boost::bind (&remote::runDataCallback, this, _1, _2),
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
                           Ccnx::Selectors ().scope (Ccnx::Selectors::SCOPE_LOCAL_HOST));  
