@@ -225,12 +225,12 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     	{
 				if (pSession)  
 				{
-    			pSession->recvPublicKeyRemote(version, seqnum, chunkSize,
+    			pSession->recvPublicKeyRemote(producer, version, seqnum, chunkSize,
         	string ((char*)Ccnx::head (*content), content->size ()));    			
         }
 				if (oSession)  
 				{
-    			oSession->recvPublicKeyRemote(version, seqnum, chunkSize,
+    			oSession->recvPublicKeyRemote(producer, version, seqnum, chunkSize,
         	string ((char*)Ccnx::head (*content), content->size ()));    			
         }		  		
     	}
@@ -240,22 +240,24 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
           //    do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len);  //how to get private key
           if (pSession)
           {
-    		pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
+    					pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
               string ((char*)Ccnx::head (*content), content->size ()));
           }
       }
     }
-
-    for (seqnum = 1; seqnum < chunkSize; seqnum++)
+    if (flag == 1)
     {
+	    for (seqnum = 1; seqnum < chunkSize; seqnum++)
+  	  {
         interestName = getBaseName(name);
         interestName.appendComp("v="+boost::lexical_cast <string>(version));
-    	interestName.appendComp("chunk="+(boost::lexical_cast <string>(seqnum+1)));
-    	interestName.appendComp("xxx");
+    	  interestName.appendComp("chunk="+(boost::lexical_cast <string>(seqnum+1)));
+    	  interestName.appendComp("xxx");
         handler.sendInterest (interestName,
                           Ccnx::Closure (boost::bind (&remote::runDataCallback, this, _1, _2),
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
                           Ccnx::Selectors ().scope (Ccnx::Selectors::SCOPE_LOCAL_HOST));  
+    	}
     }
 }
 
