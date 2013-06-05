@@ -296,10 +296,9 @@
          if (app_bk != NULL)
          {
              ParticipantSession *pSession_bk = app_bk->getParticipantSession(currentSession);
-             pSession_bk->fetchSharedKey();
+     //        pSession_bk->fetchSharedKey();
          }
     }
-
  }
 
 
