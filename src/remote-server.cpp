@@ -15,6 +15,7 @@
 using namespace std;
 
 
+/*
 int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)
 {
     RSA *keypair;
@@ -26,7 +27,8 @@ int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)
 		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);
                                                                              
     return encrypt_len;
-}                                                                            
+} */
+
 
 Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
     int flag;

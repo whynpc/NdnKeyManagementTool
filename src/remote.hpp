@@ -22,7 +22,7 @@ public:
 	int init(std::string prefix,
              std::string consumer,std::string organizer,std::string
              endpoint,std::string action);
-    int do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len);
+//    int do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len);
     //	Ccnx::Name sharedKeyOnData(Ccnx::Name name);
 	void runDataCallback(Name name, Ccnx::PcoPtr pco);
     Ccnx::Name getBaseName(Ccnx::Name name);

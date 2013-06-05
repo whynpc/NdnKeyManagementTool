@@ -24,7 +24,7 @@ public:
      }         
      return _instance;
   }
-  int do_encrypt(char **to, char *from, unsigned char *key,int len);
+//  int do_encrypt(char **to, char *from, unsigned char *key,int len);
 //  int do_decrypt(char *to, char *from, unsigned char *key,int len);
   Ccnx::Name parseSharedKey(Ccnx::Name name, std::string &ret);
 	Ccnx::Name parsePublicKey(Ccnx::Name name, std::string &ret);
