@@ -234,3 +234,9 @@ void MainWindow::addList()
      layout->addWidget(comboBox,2,2);
      horizontalGroupBox->setLayout(layout);
  }
+
+#if WAF
+#include "mainwindow.moc"
+#include "mainwindow.cpp.moc"
+#endif
+

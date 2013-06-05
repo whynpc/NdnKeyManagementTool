@@ -14,13 +14,7 @@
 #include "context.h"
 using namespace std;
 
-remote *remote::Instance()
-{
-    if (!_instance) {
-     		_instance = new remote();
-    }
-    return _instance;
-}
+
 
 int remote::split( string& str, vector<string>& ret_, string sep)
 {

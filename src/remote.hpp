@@ -17,7 +17,13 @@ using namespace Ccnx;
 class remote
 {
 public:
-  static remote *Instance(); 
+  static remote *Instance()
+    {
+        if (!_instance) {
+     		_instance = new remote();
+        }
+        return _instance;
+    };
 	int split( string& str, vector<string>& ret_, string sep);
 	int init(std::string prefix,
              std::string consumer,std::string organizer,std::string
