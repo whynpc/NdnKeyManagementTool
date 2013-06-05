@@ -5,6 +5,7 @@
 #include <QString>
 #include <QHash>
 #include <string>
+#include <QStringList>
 
 #include "organizersession.h"
 #include "participantsession.h"
@@ -32,7 +33,9 @@ public:
 
     OrganizerSession *getOrganizerSession(const QString &sessionName) const;
     ParticipantSession *getParticipantSession(const QString &sessionName) const;
-
+    void getOrganizerSessionNames(QStringList &outputList) const;
+    void getParticipantSessionNames(QstringList &outputList) const;
+    
 private:
     QHash<QString, OrganizerSession *> organizerSessions;
     QHash<QString, ParticipantSession *> participantSessions;

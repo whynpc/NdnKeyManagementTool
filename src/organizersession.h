@@ -3,6 +3,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QStringList>
 #include <string>
 #include "sharedkey.h"
 #include "peer.h"
@@ -45,6 +46,9 @@ public:
     int recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum,
                             const int chunkSize, const std::string &chunkData);
 
+    void getParticipantNames(QStringList &outputList) const;
+    void getCandidateNames(QStringList &outputList) const;
+    void getBlacklistNames(QStringList &outputList) const;
 
 private:
     int sendRenewSharedKeyRemote();

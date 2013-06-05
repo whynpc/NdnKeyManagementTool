@@ -103,6 +103,22 @@ ParticipantSession *Application::getParticipantSession(const QString &sessionNam
     }
 }
 
+void Application::getOrganizerSessionNames(QStringList &outputList) const
+{
+    foreach (QString name, organizerSessions.keys()) {
+        outputList.append(name);
+    }
+}
+
+
+void Application::getParticipantSessionNames(QStringList &outputList) const
+{
+    foreach (QString name, participantSessions.keys()) {
+        outputList.append(name);
+    }
+}
+
+
 #if WAF
 #include "application.moc"
 #include "application.cpp.moc"

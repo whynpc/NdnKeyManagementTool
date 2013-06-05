@@ -69,6 +69,53 @@ void Context::retrieveApplication(const std::string &appName, Application **appl
     *application = getApplication(qAppName);
 }
 
+void Context::getApplicationNames(QStringList &outputList) const
+{
+    foreach (QString name, applications.keys()) {
+        outputList.append(name);
+    }
+}
+
+void Context::getOrganizerSessionNames(const QString &appName, QStringList &outputList) const
+{
+    Application *app = getApplication(appName);
+    if (app != NULL) {
+        app->getOrganizerSessionNames(outputList);
+    }
+}
+
+void Context::getParticipantSessionNames(const QString &appName, QStringList &outputList) const
+{
+    Application *app = get Application(appName);
+    if (app != NULL) {
+        app->getParticipantSessionNames(outputList);
+    }
+}
+
+void Context::getParticipantNames(const QString &appName, const QString &sessionName, QStringList &outputList) const
+{
+    OrganizerSession *session = getOrganizerSession(appName, sessionName);
+    if (session != NULL) {
+        session->getParticipantNames(outputList);
+    }
+}
+
+void Context::getCandidateNames(const QString &appName, const QString &sesssionName, QStringList &outputList) const
+{
+    OrganizerSession *session = getOrganizerSession(appName, sessionName);
+    if (session != NULL) {
+        session->getCandidateNames(outputList);
+    }
+}
+
+void Context::getBlacklistNames(const QString &appName, const QString &sessionName, QStringList &outputList) const
+{
+    OrganizerSession *session = getOrganizerSession(appName, sessionName);
+    if (session != NULL) {
+        sesison->getBlacklistNames(outputList);
+    }
+}
+
 
 #if WAF
 #include "context.moc"

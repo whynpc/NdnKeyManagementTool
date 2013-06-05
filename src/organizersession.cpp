@@ -144,6 +144,26 @@ int OrganizerSession::recvFetchPublicKeyRemote(const std::string &peerName, int 
 }
 
 
+void OrganizerSession::getParticipantNames(QStringList &outputList) const
+{
+    foreach (QString name, participants.keys()) {
+        outputList.append(name);
+    }
+}
+
+void OrganizerSession::getCandidateNames(QStringList &outputList) const
+{
+    foreach (QString name, candidates.keys()) {
+        outputList.append(name);
+    }
+}
+
+void OrganizerSession::getBlacklistNames(QStringList &outputList) const
+{
+    foreach (QString name, blacklist.keys()) {
+        outputList.append(name);
+    }   
+}
 
 #if WAF
 #include "organizersession.moc"
