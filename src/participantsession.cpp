@@ -1,4 +1,4 @@
-             ParticipantSession#include "participantsession.h"
+#include "participantsession.h"
 
 ParticipantSession::ParticipantSession(const QString &sessionName, const QString &applicationName,
                                        const QString &selfName, const QString &organizerName,

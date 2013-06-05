@@ -8,6 +8,7 @@
  #include "organizersession.h"
  #include <QVector>
 
+
  MainWindow::MainWindow()
  {
      userName = "Tom";
