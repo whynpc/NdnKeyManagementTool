@@ -13,6 +13,7 @@
  class  QTextEdit;
  class QListWidget;
  class QComboBox;
+ class QListWidgetItem;
 
  class MainWindow : public QMainWindow
  {
@@ -23,6 +24,10 @@
 
  private slots:
      void update_app();
+     void update_session(QString &appname);
+     void update_candidate();
+     void update_participate();
+
      void add_app();
      void delete_app();
      void create_session();
@@ -37,6 +42,12 @@
      void renew_shared_key();
      void fetch_shared_key();
 
+//list_event:
+     void appEvent(QListWidgetItem *item);
+     void sessionEvent(QListWidgetItem *item);
+     void comboEvent(QString item);
+     void candidateEvent(QListWidgetItem *item);
+     void participateEvent(QListWidgetItem *item);
 
  private:
      void createupperBox();
@@ -56,8 +67,8 @@
      QLineEdit *lineEdits[NumGridRows];
      QListWidget *appList;
      QListWidget *sessionList;
-     QListWidget *userList;
-     QListWidget *acceptList;
+     QListWidget *candidateList;
+     QListWidget *participateList;
      QMenu *appMenu;
      QMenu *sessionMenu;
      QMenu *membershipMenu;
@@ -77,6 +88,13 @@
      QAction *renewSharedKey;
      QAction *fetchSharedKey;
 
+     QString currentApp;
+     QString currentSession;
+     QString currentCombo;
+     QString currentParticipate;
+     QString currentCandidate;
+
+     QString userName;
  };
 
  #endif

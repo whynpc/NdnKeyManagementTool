@@ -15,6 +15,8 @@ public:
     Dialog();
     QString getAppData();
     QString getSessionData();
+    QString getOrgData();
+    QString getPatData();
 //private slots:
 //    void accept();
 private:
@@ -22,8 +24,12 @@ private:
     QGroupBox *gridGroupBox;
     QLabel *appName;
     QLabel *sessionName;
+    QLabel *orgName;
+    QLabel *patName;
     QLineEdit *app;
     QLineEdit *session;
+    QLineEdit *org;
+    QLineEdit *pat;
     QPushButton *button;
 
 };
