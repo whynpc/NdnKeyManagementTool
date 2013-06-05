@@ -34,7 +34,7 @@ public:
     OrganizerSession *getOrganizerSession(const QString &sessionName) const;
     ParticipantSession *getParticipantSession(const QString &sessionName) const;
     void getOrganizerSessionNames(QStringList &outputList) const;
-    void getParticipantSessionNames(QstringList &outputList) const;
+    void getParticipantSessionNames(QStringList &outputList) const;
     
 private:
     QHash<QString, OrganizerSession *> organizerSessions;

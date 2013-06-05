@@ -86,7 +86,7 @@ void Context::getOrganizerSessionNames(const QString &appName, QStringList &outp
 
 void Context::getParticipantSessionNames(const QString &appName, QStringList &outputList) const
 {
-    Application *app = get Application(appName);
+    Application *app = getApplication(appName);
     if (app != NULL) {
         app->getParticipantSessionNames(outputList);
     }
@@ -100,7 +100,7 @@ void Context::getParticipantNames(const QString &appName, const QString &session
     }
 }
 
-void Context::getCandidateNames(const QString &appName, const QString &sesssionName, QStringList &outputList) const
+void Context::getCandidateNames(const QString &appName, const QString &sessionName, QStringList &outputList) const
 {
     OrganizerSession *session = getOrganizerSession(appName, sessionName);
     if (session != NULL) {
@@ -112,7 +112,7 @@ void Context::getBlacklistNames(const QString &appName, const QString &sessionNa
 {
     OrganizerSession *session = getOrganizerSession(appName, sessionName);
     if (session != NULL) {
-        sesison->getBlacklistNames(outputList);
+        session->getBlacklistNames(outputList);
     }
 }
 
