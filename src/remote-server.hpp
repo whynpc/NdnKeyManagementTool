@@ -17,13 +17,13 @@ using namespace std;
 class remoteServer
 {
 public:
-  static remoteServer *instance() {
-     if (!_instance) {
-     		_instance = new remoteServer();
-     }         
-     return _instance;
-  }
-//  int do_encrypt(char **to, char *from, unsigned char *key,int len);
+//    static remoteServer *_instance;
+    static remoteServer& instance()
+    {
+        static remoteServer _instance;
+        return _instance;
+    }
+    //  int do_encrypt(char **to, char *from, unsigned char *key,int len);
 //  int do_decrypt(char *to, char *from, unsigned char *key,int len);
   Ccnx::Name parseSharedKey(Ccnx::Name name, std::string &ret);
 	Ccnx::Name parsePublicKey(Ccnx::Name name, std::string &ret);
@@ -33,6 +33,10 @@ public:
 	void OnInterest (Ccnx::Name name, Ccnx::Selectors selectors);
 	int  init(std::string app, std::string session);
 private:
+    remoteServer() {}
+    remoteServer(remoteServer const&);
+    void operator=(remoteServer const&);
+ //   void
     std::string consumer;
     std::string producer;
     std::string endPoint;
@@ -41,7 +45,7 @@ private:
 	int version; //shared-key version
 	int chunkSize;
 	int chunkNum;
-	static remoteServer *_instance;
+//	static remoteServer *_instance;
 	OrganizerSession *oSession;
 	ParticipantSession *pSession;
 };

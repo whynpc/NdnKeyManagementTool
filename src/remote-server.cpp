@@ -15,6 +15,14 @@
 
 using namespace std;
 
+/*
+remoteServer remoteServer::instance() {
+    if (_instance == NULL) {
+        _instance = new remoteServer();
+    }
+    return _instance;
+}
+*/
 
 /*
 int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)

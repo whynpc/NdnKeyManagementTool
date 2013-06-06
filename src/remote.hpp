@@ -16,13 +16,11 @@ using namespace Ccnx;
 class remote
 {
 public:
-  static remote *Instance()
+    static remote& instance()
     {
-        if (!_instance) {
-     		_instance = new remote();
-        }
+        static remote _instance;
         return _instance;
-    };
+    }
 	int split( string& str, vector<string>& ret_, string sep);
 	int init(std::string prefix,
              std::string consumer,std::string organizer,std::string
@@ -45,6 +43,9 @@ public:
     void rejectMembership(std::string app, std::string session,
                                   std::string consumer,std::string organizer);
 private:
+   remote() {}
+   remote(remote const&);
+   void operator=(remote const&);
    Ccnx::Name interestName;
    Ccnx::Wrapper handler;
    static remote* _instance;

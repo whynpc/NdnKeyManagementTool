@@ -15,10 +15,9 @@ using namespace Ccnx;
 class localServer
 {
 public:
-    static localServer *instance() {
-        if (!_instance) {
-     		_instance = new localServer();
-        }
+    static localServer& instance()
+    {
+        static localServer _instance;
         return _instance;
     }
 	Ccnx::Name InterestBaseName;
@@ -29,6 +28,9 @@ public:
   Ccnx::Name parseSharedKey(Ccnx::Name name, std::string &ret);
   int  init(std::string appName);
 private:
+  localServer() {}
+  localServer(localServer const&);
+  void operator=(localServer const&);
   OrganizerSession *oSession;
   ParticipantSession *pSession;
   int chunkSize;
