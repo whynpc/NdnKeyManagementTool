@@ -3,9 +3,6 @@
 
 #include <ccnx-cpp.h>
 #include <iostream>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <map>
 #include "application.h"

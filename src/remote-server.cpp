@@ -1,3 +1,4 @@
+#include <boost/lexical_cast.hpp>
 #include <ccnx-cpp.h>
 #include <iostream>
 #include <boost/algorithm/string/predicate.hpp>
@@ -239,4 +240,6 @@ int  remoteServer::init(std::string app, std::string session){
     }
     return 0;
 }
+
+
 

@@ -4,7 +4,6 @@
 
 #include <ccnx-cpp.h>
 #include <iostream>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>

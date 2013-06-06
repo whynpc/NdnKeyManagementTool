@@ -3,7 +3,6 @@
 
 #include <ccnx-cpp.h>
 #include <iostream>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include "organizersession.h"
 #include "participantsession.h"
