@@ -220,24 +220,26 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     {
     	if (endPoint.compare("public-key") == 0)
     	{
-				if (pSession)  
-				{
+            if (pSession)
+            {
     			pSession->recvPublicKeyRemote(producer, version, seqnum, chunkSize,
         	string ((char*)Ccnx::head (*content), content->size ()));    			
-        }
-				if (oSession)  
-				{
+            }
+            if (oSession)
+            {
     			oSession->recvPublicKeyRemote(producer, version, seqnum, chunkSize,
         	string ((char*)Ccnx::head (*content), content->size ()));    			
-        }		  		
+            }		  		
     	}
     	 
       if (endPoint.compare("shared-key") == 0)
       {
-          //    do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len);  //how to get private key
+          // get private key
+          // char *decrypt;
+          //    do_decrypt(decrypt,(char*)Ccnx::head (*content), key, keylen, encrypt_len);
           if (pSession)
           {
-    					pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
+            pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
               string ((char*)Ccnx::head (*content), content->size ()));
           }
       }

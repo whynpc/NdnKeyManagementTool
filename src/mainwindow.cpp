@@ -65,7 +65,6 @@
     Context::instance()->getApplicationNames(appSmallList);
     appList->clear();
     appList->insertItems(0,appSmallList);
-
  }
 
  void MainWindow::update_session()
@@ -85,7 +84,6 @@
     }
     sessionList->clear();
     sessionList->insertItems(0,sessionSmallList);
-
  }
 
  void MainWindow::update_candidate()
@@ -135,34 +133,34 @@
 
  void MainWindow::create_session()
  {
-     bool ok;
      update_session();
-     QString session = QInputDialog::getText(this, tr("create session name"),
-                                              NULL, QLineEdit::Normal,
-                                              NULL, &ok);
-//    textEdit->setPlainText(currentApp);
-    Application *app_bk = Context::instance()->getApplication(currentApp);
-    if (app_bk != NULL)
-    {
-         app_bk->createOrganizerSession(session, userName);
-         textEdit->setPlainText(session+"  "+userName);
+     Dialog dialog;
+     if(dialog.exec() == QDialog::Accepted){
+         QString session = dialog.getSessionData();
+         QString org = dialog.getOrgData();
+         Application *app_bk = Context::instance()->getApplication(currentApp);
+         if (app_bk != NULL)
+         {
+              app_bk->createOrganizerSession(session, org);
+              textEdit->setPlainText(session+"  "+org);
+         }
+         update_session();
     }
-    update_session();
  }
 
  void MainWindow::participate_session()
  {
      update_session();
      Dialog dialog;
-
      if(dialog.exec() == QDialog::Accepted){
        // You can access everything you need in dialog object
        QString session = dialog.getSessionData();
+       QString pat =dialog.getPatData();
        QString org = dialog.getOrgData();
        Application *app_bk = Context::instance()->getApplication(currentApp);
        if (app_bk != NULL)
        {
-            app_bk->createParticipantSession(session,userName,org);
+            app_bk->createParticipantSession(session,pat,org);
        }
        update_session();
      }
@@ -249,6 +247,7 @@
             OrganizerSession *oSession_bk = app_bk->getOrganizerSession(currentSession);
             oSession_bk->acceptJoin(currentCandidate);
         }
+        update_participate();
     }
  }
 
@@ -382,6 +381,9 @@ void MainWindow::addList()
      labels[1] = new QLabel(tr("session"));
      labels[2] = new QLabel(tr("candidates"));
      labels[3] = new QLabel(tr("participates"));
+     buttons[0]= new QPushButton(tr("refresh"));
+     buttons[1]= new QPushButton(tr("refresh"));
+     buttons[2]= new QPushButton(tr("refresh"));
      comboBox = new QComboBox();
      comboBox->insertItem(0,"organizer");
      comboBox->insertItem(0,"participant");
@@ -394,7 +396,9 @@ void MainWindow::addList()
      layout->addWidget(candidateList,1,2);
      layout->addWidget(participateList,1,3);
      layout->addWidget(comboBox,2,1);
-
+     layout->addWidget(buttons[0],3,0);
+     layout->addWidget(buttons[1],3,1);
+     layout->addWidget(buttons[2],3,2);
      connect(appList, SIGNAL(itemClicked(QListWidgetItem *)),
              this, SLOT(appEvent(QListWidgetItem *)));
      connect(sessionList, SIGNAL(itemClicked(QListWidgetItem *)),

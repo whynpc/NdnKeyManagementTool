@@ -1,4 +1,5 @@
 #define BOOST_TT_HAS_OPERATOR_HPP_INCLUDED 1
+#include <iostream>
 #include "remote-server.hpp"
 #include "remote.hpp"
 #include "organizersession.h"
@@ -16,6 +17,7 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 //    remoteServer *rs = new remoteServer();
  //   rs->init(sAppName, sSessionName);
 //    remoteServer rs =remoteServer::instance();
+	std::clog<<"-1"<<std::endl;
     remoteServer::instance().init(sAppName, sSessionName);
 
     // TODO: publish data for organizer discovery
