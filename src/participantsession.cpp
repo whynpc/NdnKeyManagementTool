@@ -1,4 +1,6 @@
 #include "participantsession.h"
+#include "remote.hpp"
+#include "remote-server.hpp"
 
 ParticipantSession::ParticipantSession(const QString &sessionName, const QString &applicationName,
                                        const QString &selfName, const QString &organizerName,
@@ -12,6 +14,9 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
     if (!organizerName.isEmpty()) {
         organizer = new Peer(organizerName, this);
         // publish data: /prefix/self-name/organizer-name/
+        std::string sAppName(appName.toUtf8().constData());
+        std::string sSessionName(name.toUtf8().constData());
+        remoteServer::instance().init(sAppName, sSessionName);
     } else {
         organizer = NULL;
         // TODO: publishe data for organizer discovery
@@ -58,7 +63,12 @@ int ParticipantSession::fetchSharedKey()
 
 int ParticipantSession::sendJoinRemote()
 {
-    // TODO: send join request to organizer
+    // send join request to organizer
+    std::string sAppName(appName.toUtf8().constData());
+    std::string sSessionName(name.toUtf8().constData());
+    std::string sOrganizerName(organizer->getName().toUtf8().constData());
+    std::string sParticipantName(self->getName().toUtf8().constData());
+    remote::instance().joinMembership(sAppName, sSessionName, sParticipantName, sOrganizerName);
     return 0;
 }
 
@@ -117,7 +127,12 @@ int ParticipantSession::recvRenewSharedKeyRemote(const int version)
 int ParticipantSession::sendFetchSharedKeyRemote(const int version, const int chunkNum)
 {
     if (state == ParticipantSession::ACCEPTED) {
-        // TODO: send interest to organizer
+        // send interest to organizer
+        std::string sAppName(appName.toUtf8().constData());
+        std::string sSessionName(name.toUtf8().constData());
+        std::string sOrganizerName(organizer->getName().toUtf8().constData());
+        std::string sParticipantName(self->getName().toUtf8().constData());
+        remote::instance().fetchSharedKey(sAppName, sSessionName, sParticipantName, sOrganizerName);
         return 0;
     } else {
         return -1;

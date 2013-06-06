@@ -52,7 +52,12 @@ int OrganizerSession::acceptJoin(const QString &peerName)
 
 int OrganizerSession::sendAcceptJoinRemote(const QString &peerName)
 {
-    // TODO: send accept
+    // send accept
+    std::string sAppName(appName.toUtf8().constData());
+    std::string sSessionName(name.toUtf8().constData());
+    std::string sOrganizerName(self->getName().toUtf8().constData());
+    std::string sParticipantName(peerName.toUtf8().constData());
+    remote::instance().acceptMembership(sAppName, sSessionName, sParticipantName, sOrganizerName);
     return 0;
 }
 
@@ -71,7 +76,12 @@ int OrganizerSession::rejectJoin(const QString &peerName)
 
 int OrganizerSession::sendRejectJoinRemote(const QString &peerName)
 {
-    // TODO: send reject
+    // send reject
+    std::string sAppName(appName.toUtf8().constData());
+    std::string sSessionName(name.toUtf8().constData());
+    std::string sOrganizerName(self->getName().toUtf8().constData());
+    std::string sParticipantName(peerName.toUtf8().constData());
+    remote::instance().rejectMembership(sAppName, sSessionName, sParticipantName, sOrganizerName);
     return 0;
 }
 
@@ -98,7 +108,13 @@ int OrganizerSession::renewSharedKey(const int currentVersion)
 int OrganizerSession::sendRenewSharedKeyRemote()
 {
     foreach(Peer *peer, participants.values()) {
-        // TODO: send notification to each participant
+        // send notification to each participant
+        std::string sAppName(appName.toUtf8().constData());
+        std::string sSessionName(name.toUtf8().constData());
+        std::string sOrganizerName(self->getName().toUtf8().constData());
+        std::string sParticipantName(peer->getName().toUtf8().constData());
+        remote::instance().updateSharedKey(sAppName, sSessionName, sParticipantName, 
+                                           sOrganizerName, sharedKey->getVersion());
     }
     return 0;
 }
@@ -106,14 +122,12 @@ int OrganizerSession::sendRenewSharedKeyRemote()
 int OrganizerSession::recvCreateSharedKeyLocal()
 {
     this->crateSharedKey();
-    // TODO: send ack
     return 0;
 }
 
 int OrganizerSession::recvRenewSharedKeyLocal(const int currentVersion)
 {
     this->renewSharedKey(currentVersion);
-    // TODO: send ack
     return 0;
 }
 
@@ -121,14 +135,22 @@ int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int 
                                                int &chunkNum, int &chunkSize, std::string &buffer)
 {
     QString qPeerName(peerName.c_str());   
-    // TODO: check version & chunkNum
     if (participants.contains(qPeerName)) {
-        // TODO: send chunk
-        // Use sharedKey.getChunk(chunkNum)
-    } else {
-        // TODO: send error code
+        if (version == 0) {
+                // the first interest without specifying version/chunkNum
+                // to tell the participant version/chunkSize
+            version = sharedKey->getVersion();
+            chunkNum = 1;
+            chunkSize = sharedKey->getChunkSize();
+        }
+        if (version == sharedKey->getVersion()) {
+            QByteArray buf;
+            sharedKey->readChunk(chunkNum, buf);
+            buffer.append(buf.data());
+            return 0;
+        }
     }
-    return 0;
+    return -1;     
 }
 
 int OrganizerSession::recvAcceptJoinLocal(const std::string &peerName)
