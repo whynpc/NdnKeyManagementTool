@@ -56,9 +56,12 @@ int ParticipantSession::join()
 
 int ParticipantSession::fetchSharedKey() 
 {
-        // TDOO: check the parameter setting
-    sendFetchSharedKeyRemote(sharedKey->getVersion(), 1);
-    return 0;
+    if (organizer != NULL) {
+        sendFetchSharedKeyRemote(sharedKey->getVersion(), 1);
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 int ParticipantSession::sendJoinRemote()
