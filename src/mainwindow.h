@@ -24,7 +24,7 @@
 
  private slots:
      void update_app();
-     void update_session(QString &appname);
+     void update_session();
      void update_candidate();
      void update_participate();
 

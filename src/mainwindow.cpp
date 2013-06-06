@@ -29,7 +29,7 @@
  void MainWindow::appEvent(QListWidgetItem *item)
  {
      currentApp = item->text();
-     update_session(currentApp);
+     update_session();
 //         textEdit->setPlainText(item->text());
  }
 
@@ -54,6 +54,8 @@
  void MainWindow::comboEvent(QString item)
  {
      currentCombo = item;
+     update_app();
+//     textEdit->setPlainText("change combo:  "+currentCombo);
 //     currentSession = item->text();
  }
 
@@ -66,9 +68,10 @@
 
  }
 
- void MainWindow::update_session(QString &appname)
+ void MainWindow::update_session()
  {
     QStringList sessionSmallList;
+    textEdit->setPlainText("current:  "+currentCombo);
     if (currentCombo == "organizer")
     {
         Context::instance()->getOrganizerSessionNames(currentApp, sessionSmallList);
@@ -133,7 +136,7 @@
  void MainWindow::create_session()
  {
      bool ok;
-     update_session(currentApp);
+     update_session();
      QString session = QInputDialog::getText(this, tr("create session name"),
                                               NULL, QLineEdit::Normal,
                                               NULL, &ok);
@@ -142,14 +145,14 @@
     if (app_bk != NULL)
     {
          app_bk->createOrganizerSession(session, userName);
+         textEdit->setPlainText(session+"  "+userName);
     }
-    update_session(currentApp);
-
+    update_session();
  }
 
  void MainWindow::participate_session()
  {
-     update_session(currentApp);
+     update_session();
      Dialog dialog;
 
      if(dialog.exec() == QDialog::Accepted){
@@ -161,13 +164,13 @@
        {
             app_bk->createParticipantSession(session,userName,org);
        }
-       update_session(currentApp);
+       update_session();
      }
  }
 
  void MainWindow::join_session()
  {
-     update_session(currentApp);
+     update_session();
      Dialog dialog;
      if (currentCombo == "participant")
      {
@@ -181,7 +184,7 @@
                ParticipantSession *pSession_bk = app_bk->getParticipantSession(session);
                pSession_bk->join();
            }
-           update_session(currentApp);
+           update_session();
          }
      }
  }
@@ -189,7 +192,7 @@
  void MainWindow::destroy_session()
  {
      bool ok;
-     update_session(currentApp);
+     update_session();
      QString session = QInputDialog::getText(this, tr("destroy session"),
                                               NULL, QLineEdit::Normal,
                                               NULL, &ok);
@@ -204,7 +207,7 @@
          {
              app_bk->destroyParticipantSession(session);
          }     }
-     update_session(currentApp);
+     update_session();
  }
 
  void MainWindow::quit_session()
@@ -283,7 +286,7 @@
          if (app_bk != NULL)
          {
              OrganizerSession *oSession_bk = app_bk->getOrganizerSession(currentSession);
-             oSession_bk->renewSharedKey(3);//how  to get the version
+             oSession_bk->renewSharedKey();//how  to get the version
          }
      }
  }
@@ -296,7 +299,7 @@
          if (app_bk != NULL)
          {
              ParticipantSession *pSession_bk = app_bk->getParticipantSession(currentSession);
-     //        pSession_bk->fetchSharedKey();
+             pSession_bk->fetchSharedKey();
          }
     }
  }
@@ -401,6 +404,8 @@ void MainWindow::addList()
      connect(candidateList, SIGNAL(itemClicked(QListWidgetItem *)),
              this, SLOT(candidateEvent(QListWidgetItem *)));
 
+     connect(comboBox,SIGNAL(activated(QString)),
+             this, SLOT(comboEvent(QString)));
      connect(comboBox,SIGNAL(currentIndexChanged(QString)),
              this, SLOT(comboEvent(QString)));
      horizontalGroupBox->setLayout(layout);
