@@ -6,6 +6,7 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 {
     self = new Peer(selfName, this);
     sharedKey = new SharedKey(this);
+    
     // TODO: publish data: /prefix/self-name/
     // TODO: publish data for organizer discovery
 }
