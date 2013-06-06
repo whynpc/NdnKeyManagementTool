@@ -21,6 +21,7 @@ public:
     int rejectJoin(const QString &peerName);
 
     int crateSharedKey();
+    int renewSharedKey();
     int renewSharedKey(const int currentVersion);
 
         // recv Create Shared Key Interest from application

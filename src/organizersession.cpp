@@ -68,7 +68,13 @@ int OrganizerSession::crateSharedKey()
     return 0;
 }
 
-int OrganizerSession::renewSharedKey(const int currentVersion) {
+int OrganizerSession::renewSharedKey() 
+{
+    return renewSharedKey(sharedKey->getVersion());
+}    
+
+int OrganizerSession::renewSharedKey(const int currentVersion) 
+{
     if (currentVersion == sharedKey->getVersion()) {
         sharedKey->renew();
         this->sendRenewSharedKeyRemote();

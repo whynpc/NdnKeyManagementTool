@@ -49,6 +49,13 @@ int ParticipantSession::join()
     }
 }
 
+int ParticipantSession::fetchSharedKey() 
+{
+        // TDOO: check the parameter setting
+    sendFetchSharedKeyRemote(sharedKey->getVersion(), 1);
+    return 0;
+}
+
 int ParticipantSession::sendJoinRemote()
 {
     // TODO: send join request to organizer

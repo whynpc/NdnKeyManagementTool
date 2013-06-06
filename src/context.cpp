@@ -48,6 +48,7 @@ int Context::addApplication(const QString &appName)
 int Context::removeApplication(const QString &appName)
 {
     if (applications.contains(appName)) {
+        applications.remove(appName);
         return 0;
     } else {
         return -1;
@@ -92,7 +93,8 @@ void Context::getParticipantSessionNames(const QString &appName, QStringList &ou
     }
 }
 
-void Context::getParticipantNames(const QString &appName, const QString &sessionName, QStringList &outputList) const
+void Context::getParticipantNames(const QString &appName, const QString &sessionName, 
+                                  QStringList &outputList) const
 {
     OrganizerSession *session = getOrganizerSession(appName, sessionName);
     if (session != NULL) {
@@ -100,7 +102,8 @@ void Context::getParticipantNames(const QString &appName, const QString &session
     }
 }
 
-void Context::getCandidateNames(const QString &appName, const QString &sessionName, QStringList &outputList) const
+void Context::getCandidateNames(const QString &appName, const QString &sessionName, 
+                                QStringList &outputList) const
 {
     OrganizerSession *session = getOrganizerSession(appName, sessionName);
     if (session != NULL) {
@@ -108,7 +111,8 @@ void Context::getCandidateNames(const QString &appName, const QString &sessionNa
     }
 }
 
-void Context::getBlacklistNames(const QString &appName, const QString &sessionName, QStringList &outputList) const
+void Context::getBlacklistNames(const QString &appName, const QString &sessionName, 
+                                QStringList &outputList) const
 {
     OrganizerSession *session = getOrganizerSession(appName, sessionName);
     if (session != NULL) {
