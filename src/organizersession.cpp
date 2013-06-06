@@ -1,4 +1,7 @@
+#include "remote-server.hpp"
+#include "remote.hpp"
 #include "organizersession.h"
+
 
 OrganizerSession::OrganizerSession(const QString &sessionName, const QString &applicationName,
                                    const QString &selfName, QObject *parent) :
@@ -6,7 +9,11 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 {
     self = new Peer(selfName, this);
     sharedKey = new SharedKey(this);
-    // TODO: publish data: /prefix/self-name/
+    // publish data: /prefix/self-name/
+    std::string sAppName(appName.toUtf8().constData());
+    std::string sSessionName(name.toUtf8().constData());
+    remoteServer::instance()->init(sAppName, sSessionName);
+        
     // TODO: publish data for organizer discovery
 }
 
