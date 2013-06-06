@@ -35,7 +35,7 @@ public:
     void fetchPublicKey(std::string app, std::string session,
                                 std::string consumer,std::string organizer);
     void updateSharedKey(std::string app, std::string session,
-                                 std::string consumer,std::string organizer);
+                                 std::string consumer,std::string organizer,int version);
     void joinMembership(std::string app, std::string session,
                                 std::string consumer,std::string organizer);
     void acceptMembership(std::string app, std::string session,

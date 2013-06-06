@@ -86,13 +86,15 @@ void remote::fetchPublicKey(std::string app, std::string session,
 }
 
 void remote::updateSharedKey(std::string app, std::string session,
-                             std::string consumer,std::string organizer)
+                             std::string consumer,std::string organizer, int version)
 {
- 		std::string prefix(app);
-		prefix.append("_");
-		prefix.append(session);
-		std::string endpoint("shared-key");
+    std::string prefix(app);
+    prefix.append("_");
+    prefix.append(session);
+    std::string endpoint("shared-key");
     std::string action("update");
+    action.append("_");
+    action.append(boost::lexical_cast<string>(version));
     init(prefix,consumer,organizer,endpoint,action);
 }
 
