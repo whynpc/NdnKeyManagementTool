@@ -15,7 +15,7 @@ int SharedKey::create()
 
 int SharedKey::renew()
 {
-    QByteArray dummyKey("sharedkey");
+    QByteArray dummyKey("renewedSharedkey");
     updateChunk(version + 1, 1, 1, dummyKey);
 }
 
