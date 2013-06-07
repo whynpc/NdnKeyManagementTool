@@ -46,6 +46,7 @@ def configure(conf):
     conf.load ('ccnx')
     conf.load('qt4')
     conf.load('boost')
+    conf.load('openssl')
     conf.load('sqlite3')
     conf.check_boost(lib='system test thread')
 

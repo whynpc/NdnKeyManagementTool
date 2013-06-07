@@ -122,7 +122,7 @@ int ParticipantSession::recvRenewSharedKeyRemote(const int version)
 {
     if (version > sharedKey->getVersion()) {
         // send interest for 1st chunk; communication layer automatically request remaining chunks        
-        this->sendFetchSharedKeyRemote(sharedKey->getVersion(), 1);
+        this->sendFetchSharedKeyRemote(version, 1);
         return 0;
     } else {
         return -1;
@@ -167,7 +167,8 @@ int ParticipantSession::sendRenewSharedKeyLocal()
     return 0;
 }
 
-int ParticipantSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer)
+int ParticipantSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, 
+                                                int &chunkSize, std::string &buffer)
 {
     if (version != sharedKey->getVersion()) {
         // send chunk
@@ -183,8 +184,9 @@ int ParticipantSession::recvFetchPublicKeyRemote(const std::string &peerName, in
     return 0;    
 }
 
-int ParticipantSession::recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum, 
-                                            const int chunkSize, const std::string &chunkData)
+int ParticipantSession::recvPublicKeyRemote(const std::string &peerName, const int version, 
+                                            const int chunkNum, const int chunkSize, 
+                                            const std::string &chunkData)
 {
     return 0;
 }
