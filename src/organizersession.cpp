@@ -145,9 +145,10 @@ int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int 
             chunkSize = sharedKey->getChunkSize();
         }
         if (version == sharedKey->getVersion()) {
-            QByteArray buf;
-            sharedKey->readChunk(chunkNum, buf);
-            buffer.append(buf.data());
+            //QByteArray buf;
+            //sharedKey->readChunk(chunkNum, buf);
+            //buffer.append(buf.data());
+            buffer.append("sharedKeyContent");
             return 0;
         }
     }

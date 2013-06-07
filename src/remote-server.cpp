@@ -221,7 +221,6 @@ void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     Context::instance()->retrieveSession(app, session, &oSession, &pSession);
     	
     std::string msg("");
-    std::clog<<"name  "<<name<<std::endl;
     //resolving name
     if (endPoint.compare("shared-key") == 0){
         dataName = parseSharedKey(name, msg);
@@ -232,7 +231,8 @@ void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     if (endPoint.compare("public-key") == 0){
         dataName = parsePublicKey(name, msg);
     }
-    std::clog<<"sent key content:" <<msg<<std::endl;
+    std::clog<<"dataname back to consumer  "<<dataName<<std::endl;
+    std::clog<<"sent data msg" <<msg<<std::endl;
     
     handler.publishData (dataName, msg, 5);
 }

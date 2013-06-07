@@ -46,6 +46,7 @@ private:
    remote() {}
    remote(remote const&);
    void operator=(remote const&);
+   Ccnx::Name interestBaseName;
    Ccnx::Name interestName;
    Ccnx::Wrapper handler;
    static remote* _instance;

@@ -135,7 +135,7 @@ int remote::init(std::string prefix,std::string producer,
                  std::string consumer,std::string
                  endpoint,std::string action){
     
-    Ccnx::Name interestBaseName = Ccnx::Name();
+    interestBaseName = Ccnx::Name();
     interestBaseName.appendComp(prefix);
     interestBaseName.appendComp(producer);
     interestBaseName.appendComp(consumer);
@@ -143,7 +143,7 @@ int remote::init(std::string prefix,std::string producer,
     interestBaseName.appendComp(action); //action
     interestBaseName.appendComp("xxx"); //rand+auth_token/
     //    InterestBaseName = Ccnx::Name (interestName);
-    Ccnx::Wrapper handler;
+//    Ccnx::Wrapper handler;
     handler.sendInterest (interestBaseName,
                           Ccnx::Closure (boost::bind (&remote::runDataCallback, this, _1, _2),
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
@@ -167,9 +167,9 @@ Ccnx::Name remote::getBaseName(Ccnx::Name name)
 
 void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
 {
-    std::cout<<"data callback name:  "<<name<<std::endl;
+    std::clog<<"data callback name:  "<<name<<std::endl;
     Ccnx::BytesPtr content = pco->contentPtr ();
-    std::cout<<"data callback content:  "<<content<<std::endl;
+    std::clog<<"data callback content:  "<<content<<std::endl;
     std::string action = name.getCompAsString(4); //action
     std::string consumer = name.getCompAsString(2); //consumer
     std::string producer = name.getCompAsString(1); //producer
