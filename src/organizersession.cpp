@@ -138,8 +138,6 @@ int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int 
     QString qPeerName(peerName.c_str());   
     if (participants.contains(qPeerName)) {
         if (version == 0) {
-                // the first interest without specifying version/chunkNum
-                // to tell the participant version/chunkSize
             version = sharedKey->getVersion();
         }
         if (chunkNum == 0) {
@@ -175,7 +173,23 @@ int OrganizerSession::recvRejectJoinLocal(const std::string &peerName)
 
 int OrganizerSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer)
 {
-    return 0;
+    if (version == 0) {
+        version = sharedKey->getVersion();
+    }
+    if (chunkNum == 0) {
+        chunkNum = 1;
+    }
+    if (chunkSize == 0) {
+        chunkSize = sharedKey->getChunkSize();
+    }
+    if (version == sharedKey->getVersion()) {
+        QByteArray buf;
+        sharedKey->readChunk(chunkNum, buf);
+        buffer.append(buf.data());
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 int OrganizerSession::recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum, 

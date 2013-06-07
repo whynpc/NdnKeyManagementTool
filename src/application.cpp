@@ -1,9 +1,13 @@
 #include <iostream>
 #include "application.h"
+#include "local-server.hpp"
 
 Application::Application(const QString &appName, QObject *parent) :
     QObject(parent), name(appName)
 {
+    std::string sAppName(name.toUtf8().constData());
+    localServer::instance().init(sAppName);
+    
 }
 
 int Application::createOrganizerSession(const QString &sessionName, const QString &selfName)
