@@ -141,7 +141,11 @@ int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int 
                 // the first interest without specifying version/chunkNum
                 // to tell the participant version/chunkSize
             version = sharedKey->getVersion();
+        }
+        if (chunkNum == 0) {
             chunkNum = 1;
+        }
+        if (chunkSize == 0) {
             chunkSize = sharedKey->getChunkSize();
         }
         if (version == sharedKey->getVersion()) {
