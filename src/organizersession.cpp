@@ -11,7 +11,7 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 {
     self = new Peer(selfName, this);
     sharedKey = new SharedKey(this);
-
+    sharedKey->create();
     std::string sAppName(appName.toUtf8().constData());
     std::string sSessionName(name.toUtf8().constData());
 	std::string sSelfName(selfName.toUtf8().constData());
@@ -145,10 +145,10 @@ int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int 
             chunkSize = sharedKey->getChunkSize();
         }
         if (version == sharedKey->getVersion()) {
-            //QByteArray buf;
-            //sharedKey->readChunk(chunkNum, buf);
-            //buffer.append(buf.data());
-            buffer.append("sharedKeyContent");
+            QByteArray buf;
+            sharedKey->readChunk(chunkNum, buf);
+            buffer.append(buf.data());
+           // buffer.append("sharedKeyContent");
             return 0;
         }
     }

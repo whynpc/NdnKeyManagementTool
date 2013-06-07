@@ -182,16 +182,17 @@
  void MainWindow::join_session()
  {
      update_session();
-     Dialog dialog;
+//     Dialog dialog;
      if (currentCombo == "participant")
      {
-         if(dialog.exec() == QDialog::Accepted){
-           QString session = dialog.getSessionData();
-           QString app = dialog.getAppData();
-           Application *app_bk = Context::instance()->getApplication(app);
+//         if(dialog.exec() == QDialog::Accepted)
+         {
+//           QString session = dialog.getSessionData();
+ //          QString app = dialog.getAppData();
+           Application *app_bk = Context::instance()->getApplication(currentApp);
            if (app_bk != NULL)
            {
-               ParticipantSession *pSession_bk = app_bk->getParticipantSession(session);
+               ParticipantSession *pSession_bk = app_bk->getParticipantSession(currentSession);
                pSession_bk->join();
            }
            update_session();
@@ -238,6 +239,7 @@
 
  void MainWindow::join_membership()
  {
+     update_session();
      if (currentCombo == "participant")
      {
          Application *app_bk = Context::instance()->getApplication(currentApp);
@@ -246,6 +248,7 @@
              ParticipantSession *pSession_bk = app_bk->getParticipantSession(currentSession);
              pSession_bk->join();
          }
+         update_session();
      }
  }
 
