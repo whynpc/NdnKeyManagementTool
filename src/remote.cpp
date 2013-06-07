@@ -64,29 +64,29 @@ int do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_
 }*/
 
 void remote::fetchSharedKey(std::string app, std::string session,
-                            std::string consumer,std::string organizer)
+                            std::string consumer,std::string producer)
 {
 		std::string prefix(app);
 		prefix.append("_");
 		prefix.append(session);
     std::string endpoint("shared-key");
     std::string action("fetch");
-    init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,producer,consumer,endpoint,action);
 }
 
 void remote::fetchPublicKey(std::string app, std::string session,
-                            std::string consumer,std::string organizer)
+                            std::string consumer,std::string producer)
 {		
 		std::string prefix(app);
 		prefix.append("_");
 		prefix.append(session);
     std::string endpoint("public-key");
     std::string action("fetch");
-    init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,producer,consumer,endpoint,action);
 }
 
 void remote::updateSharedKey(std::string app, std::string session,
-                             std::string consumer,std::string organizer, int version)
+                             std::string consumer,std::string producer, int version)
 {
     std::string prefix(app);
     prefix.append("_");
@@ -95,50 +95,50 @@ void remote::updateSharedKey(std::string app, std::string session,
     std::string action("update");
     action.append("_");
     action.append(boost::lexical_cast<string>(version));
-    init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,producer,consumer,endpoint,action);
 }
 
 void remote::joinMembership(std::string app, std::string session,
-                            std::string consumer,std::string organizer)
+                            std::string consumer,std::string producer)
 {
  		std::string prefix(app);
 		prefix.append("_");
 		prefix.append(session);
 		std::string endpoint("membership");
     std::string action("join");
-    init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,producer,consumer,endpoint,action);
 }
 
 void remote::acceptMembership(std::string app, std::string session,
-                              std::string consumer,std::string organizer)
+                              std::string consumer,std::string producer)
 {
  		std::string prefix(app);
 		prefix.append("_");
 		prefix.append(session);
 		std::string endpoint("membership");
     std::string action("accept");
-    init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,producer,consumer,endpoint,action);
 }
 
 void remote::rejectMembership(std::string app, std::string session,
-                              std::string consumer,std::string organizer)
+                              std::string consumer,std::string producer)
 {
  		std::string prefix(app);
 		prefix.append("_");
 		prefix.append(session);
 		std::string endpoint("membership");
     std::string action("reject");
-    init(prefix,consumer,organizer,endpoint,action);
+    init(prefix,producer,consumer,endpoint,action);
 }
 
-int remote::init(std::string prefix,
-                 std::string consumer,std::string organizer,std::string
+int remote::init(std::string prefix,std::string producer,
+                 std::string consumer,std::string
                  endpoint,std::string action){
     
     Ccnx::Name interestBaseName = Ccnx::Name();
     interestBaseName.appendComp(prefix);
+    interestBaseName.appendComp(producer);
     interestBaseName.appendComp(consumer);
-    interestBaseName.appendComp(organizer);
     interestBaseName.appendComp(endpoint);
     interestBaseName.appendComp(action); //action
     interestBaseName.appendComp("xxx"); //rand+auth_token/
@@ -149,7 +149,7 @@ int remote::init(std::string prefix,
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
                           Ccnx::Selectors ().scope (Ccnx::Selectors::SCOPE_LOCAL_HOST));
     
-    sleep (3);
+ //   sleep (3);
     return 0;
     
 }
@@ -167,10 +167,12 @@ Ccnx::Name remote::getBaseName(Ccnx::Name name)
 
 void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
 {
+    std::cout<<"data callback name:  "<<name<<std::endl;
     Ccnx::BytesPtr content = pco->contentPtr ();
+    std::cout<<"data callback content:  "<<content<<std::endl;
     std::string action = name.getCompAsString(4); //action
-    std::string consumer = name.getCompAsString(1); //consumer
-    std::string producer = name.getCompAsString(2); //producer
+    std::string consumer = name.getCompAsString(2); //consumer
+    std::string producer = name.getCompAsString(1); //producer
     std::string endPoint = name.getCompAsString(3); //endpoint
     std::string prefix = name.getCompAsString(0);
     std::string app;

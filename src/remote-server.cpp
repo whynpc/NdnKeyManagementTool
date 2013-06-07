@@ -181,9 +181,11 @@ Ccnx::Name remoteServer::parseMembership(Ccnx::Name name){
         action.compare("reject") == 0){
         dataName.appendComp("code=0");
     }
+    std::clog<<"action:  "<<action<<endl;
     if (action.compare("join") == 0){
-     	  std::string consumer = name.getCompAsString(1); //consumer
+//     	  std::string consumer = name.getCompAsString(1); //consumer
      	  if (oSession){
+              std::clog<<"consumer   "<<consumer<<endl;
     			oSession->recvJoinRemote(consumer);
     		}
     }
@@ -204,9 +206,9 @@ Ccnx::Name remoteServer::parseMembership(Ccnx::Name name){
 
 void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     Ccnx::Name dataName;
-    //    cout<<name<<endl;
-    consumer = name.getCompAsString(1); //consumer
-    producer = name.getCompAsString(2); //producer
+    clog<<"on interest data name    "<<name<<endl;
+    consumer = name.getCompAsString(2); //consumer
+    producer = name.getCompAsString(1); //producer
     endPoint = name.getCompAsString(3); //endpoint
     action = name.getCompAsString(4); //action
     prefix = name.getCompAsString(0);
@@ -216,11 +218,11 @@ void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     boost::split(app_session, prefix,boost::is_any_of("_"));        	
     app = app_session[0];
     session = app_session[1];	
-		Context::instance()->retrieveSession(app, session, &oSession, &pSession);
+    Context::instance()->retrieveSession(app, session, &oSession, &pSession);
     	
     std::string msg("");
-    
-    //resolving name	
+    std::clog<<"name  "<<name<<std::endl;
+    //resolving name
     if (endPoint.compare("shared-key") == 0){
         dataName = parseSharedKey(name, msg);
     }
@@ -230,11 +232,12 @@ void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     if (endPoint.compare("public-key") == 0){
         dataName = parsePublicKey(name, msg);
     }
+    std::clog<<"sent key content:" <<msg<<std::endl;
     
     handler.publishData (dataName, msg, 5);
 }
 
-int  remoteServer::init(std::string app, std::string session){
+int  remoteServer::init(std::string app, std::string session, std::string consumer){
 	std::clog<<"0"<<endl;	
 	std::string prefix(app);
 	std::clog<<"1"<<endl;
@@ -246,7 +249,7 @@ int  remoteServer::init(std::string app, std::string session){
 	Ccnx::Name interestBaseName = Ccnx::Name();
 	std::clog<<"4"<<endl;
     interestBaseName.appendComp(prefix);
-	
+    interestBaseName.appendComp(consumer);
 	std::clog<<"5"<<endl;
 	handler.setInterestFilter (interestBaseName, boost::bind (&remoteServer::OnInterest, this, _1, _2));
 	std::clog<<"6"<<endl;

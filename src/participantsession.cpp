@@ -16,7 +16,8 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
         // publish data: /prefix/self-name/organizer-name/
         std::string sAppName(appName.toUtf8().constData());
         std::string sSessionName(name.toUtf8().constData());
-        remoteServer::instance().init(sAppName, sSessionName);
+        std::string sProducer(selfName.toUtf8().constData());
+        remoteServer::instance().init(sAppName, sSessionName,sProducer);
     } else {
         organizer = NULL;
         // TODO: publishe data for organizer discovery
@@ -145,6 +146,7 @@ int ParticipantSession::sendFetchSharedKeyRemote(const int version, const int ch
 int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNum, 
                                             const int chunkSize, const std::string &chunkData)
 {
+    std::clog<<"rec shared key"<<"  "<<version<<"  "<<chunkData<<std::endl;
     QByteArray qChunkData(chunkData.c_str());
     return sharedKey->updateChunk(version, chunkNum, chunkSize, qChunkData);
 }

@@ -14,11 +14,12 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 
     std::string sAppName(appName.toUtf8().constData());
     std::string sSessionName(name.toUtf8().constData());
+	std::string sSelfName(selfName.toUtf8().constData());
 //    remoteServer *rs = new remoteServer();
  //   rs->init(sAppName, sSessionName);
 //    remoteServer rs =remoteServer::instance();
 	std::clog<<"-1"<<std::endl;
-    remoteServer::instance().init(sAppName, sSessionName);
+    remoteServer::instance().init(sAppName, sSessionName, sSelfName);
 
     // TODO: publish data for organizer discovery
 }

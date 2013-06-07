@@ -11,11 +11,8 @@ int Application::createOrganizerSession(const QString &sessionName, const QStrin
     if (organizerSessions.contains(sessionName)) {
         return -1;
     } else {
-		std::clog<<"before construct"<<std::endl;
         OrganizerSession *session = new OrganizerSession(sessionName, this->name, selfName, this);
-		std::clog<<"after construct"<<std::endl;
         organizerSessions.insert(sessionName, session);
-		std::clog<<"after inssert"<<std::endl;
         return 0;
     }
 }
@@ -91,6 +88,7 @@ int Application::recvDestroyParticipantSession(const std::string &sessionName)
 
 OrganizerSession *Application::getOrganizerSession(const QString &sessionName) const
 {
+    std::clog<<sessionName.toUtf8().constData()<<std::endl;
     if (organizerSessions.contains(sessionName)) {
         return organizerSessions[sessionName];
     } else {

@@ -1,4 +1,6 @@
+#include <iostream>
 #include "context.h"
+
 
 Q_GLOBAL_STATIC(Context, context)
 
@@ -18,9 +20,12 @@ Application *Context::getApplication(const QString &appName) const
 
 OrganizerSession *Context::getOrganizerSession(const QString &appName, const QString &sessionName) const
 {
+	std::clog<<appName.toUtf8().constData()<<" "<<sessionName.toUtf8().constData()<<std::endl;
     if (applications.contains(appName)) {
+		std::clog<<"found app"<<std::endl;
         return applications[appName]->getOrganizerSession(sessionName);
     } else {
+		std::clog<<"no found app"<<std::endl;
         return NULL;
     }
 }
@@ -58,6 +63,7 @@ int Context::removeApplication(const QString &appName)
 void Context::retrieveSession(const std::string &appName, const std::string &sessionName, 
 		     OrganizerSession **oSession, ParticipantSession **pSession) const
 {
+	std::clog<<"retrievesession: "<<appName<<" "<<sessionName<<std::endl;
     QString qAppName(appName.c_str());
     QString qSessionName(sessionName.c_str());
     *oSession = getOrganizerSession(qAppName, qSessionName);

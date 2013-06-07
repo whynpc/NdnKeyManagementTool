@@ -173,7 +173,6 @@
      if (currentCombo == "participant")
      {
          if(dialog.exec() == QDialog::Accepted){
-           // You can access everything you need in dialog object
            QString session = dialog.getSessionData();
            QString app = dialog.getAppData();
            Application *app_bk = Context::instance()->getApplication(app);
@@ -407,6 +406,10 @@ void MainWindow::addList()
              this, SLOT(participateEvent(QListWidgetItem *)));
      connect(candidateList, SIGNAL(itemClicked(QListWidgetItem *)),
              this, SLOT(candidateEvent(QListWidgetItem *)));
+
+     connect(buttons[0], SIGNAL(clicked()), this, SLOT(update_app()));
+     connect(buttons[1], SIGNAL(clicked()), this, SLOT(update_session()));
+     connect(buttons[2], SIGNAL(clicked()), this, SLOT(update_candidate()));
 
      connect(comboBox,SIGNAL(activated(QString)),
              this, SLOT(comboEvent(QString)));
