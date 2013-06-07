@@ -51,6 +51,9 @@ public:
     void getCandidateNames(QStringList &outputList) const;
     void getBlacklistNames(QStringList &outputList) const;
 
+    void getDebugInfo(QString &outputBuffer) const;
+    
+
 private:
     int sendRenewSharedKeyRemote();
     int sendAcceptJoinRemote(const QString &peerName);

@@ -16,6 +16,9 @@ public:
     int renew();
 
     int readChunk(const int chunkNum, QByteArray &outputBuffer);    
+    
+    
+    void getDebugInfo(QString &outputBuffer) const;
 
 protected:
     int writeChunkCache(const int version, const int chunkNum, const int chunkSize, 

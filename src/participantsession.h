@@ -48,12 +48,11 @@ public:
     int recvJoinLocal();
 // recv Fetch Shared Key Interest from application
     int recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer);
+    
 
-
-    bool recvSharedKey;
-                      
-                                                                                                 
-
+    void getDebugInfo(QString &outputBuffer) const;
+    bool recvSharedKey;                           
+                                                  
 public slots:
     void renewSharedKey(int version);
 

@@ -23,8 +23,7 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
         // TODO: publishe data for organizer discovery
         // TODO: organizer discovery
     }
-
-    recvSharedKey = false;
+    
     
     QObject::connect(sharedKey, SIGNAL(updateComplete(int)), this, SLOT(renewSharedKey(int)));
 }
@@ -189,6 +188,39 @@ int ParticipantSession::recvPublicKeyRemote(const std::string &peerName, const i
 {
     return 0;
 }
+
+void ParticipantSession::getDebugInfo(QString &outputBuffer) const
+{
+    outputBuffer.append("Self: ");
+    outputBuffer.append(self->getName());
+    outputBuffer.append("\nOrganizer: ");
+    if (organizer == NULL) {
+        outputBuffer.append("NULL");
+    } else {
+        outputBuffer.append(organizer->getName());
+    }
+    outputBuffer.append("\nStatus: ");
+    switch (state) {
+        case ParticipantSession::INIT:
+            outputBuffer.append("init");
+            break;
+        case ParticipantSession::PENDING:
+            outputBuffer.append("PENDING");
+            break;
+        case ParticipantSession::ACCEPTED:
+            outputBuffer.append("ACCEPTED");
+            break;
+        case ParticipantSession::REJECTED:
+            outputBuffer.append("REJECTED");
+            break;
+        default:
+            break;
+    }
+    outputBuffer.append("\nShared Key: ");
+    sharedKey->getDebugInfo(outputBuffer);
+    outputBuffer.append("\n");
+}
+
 
 #if WAF
 #include "participantsession.moc"

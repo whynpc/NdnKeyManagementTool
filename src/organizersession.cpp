@@ -212,6 +212,16 @@ void OrganizerSession::getBlacklistNames(QStringList &outputList) const
     }   
 }
 
+void OrganizerSession::getDebugInfo(QString &outputBuffer) const
+{
+    outputBuffer.append("Self: ");
+    outputBuffer.append(self->getName());
+    outputBuffer.append("\nShared Key: ");
+    sharedKey->getDebugInfo(outputBuffer);
+    outputBuffer.append("\n");
+}
+
+
 #if WAF
 #include "organizersession.moc"
 #include "organizersession.cpp.moc"

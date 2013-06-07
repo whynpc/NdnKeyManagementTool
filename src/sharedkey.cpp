@@ -90,6 +90,16 @@ bool SharedKey::update()
     return true;
 }
 
+void SharedKey::getDebugInfo(QString &outputBuffer) const
+{
+    char verText[10];
+    sprintf(verText, "%d, ", version);
+    outputBuffer.append(verText);
+    if (content.contains(1)) {
+        outputBuffer.append((content[1])->data());
+    }
+}
+
 
 #if WAF
 #include "sharedkey.moc"
