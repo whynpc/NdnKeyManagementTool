@@ -238,21 +238,14 @@ void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
 }
 
 int  remoteServer::init(std::string app, std::string session, std::string consumer){
-	std::clog<<"0"<<endl;	
 	std::string prefix(app);
-	std::clog<<"1"<<endl;
 	prefix.append("_");
-
-	std::clog<<"2"<<endl;
 	prefix.append(session);
-	std::clog<<"3"<<endl;
 	Ccnx::Name interestBaseName = Ccnx::Name();
-	std::clog<<"4"<<endl;
     interestBaseName.appendComp(prefix);
     interestBaseName.appendComp(consumer);
-	std::clog<<"5"<<endl;
 	handler.setInterestFilter (interestBaseName, boost::bind (&remoteServer::OnInterest, this, _1, _2));
-	std::clog<<"6"<<endl;
+
     return 0;
 }
 

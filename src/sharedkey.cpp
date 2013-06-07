@@ -3,8 +3,10 @@
 SharedKey::SharedKey(QObject *parent) 
     : ContentObject(parent)
 {
-    this->version = 0;    
-
+    version = 0;
+    chunkSize = 0;
+    cacheVersion = 0;
+    cacheChunkSize = 0;
 }
 
 int SharedKey::create()

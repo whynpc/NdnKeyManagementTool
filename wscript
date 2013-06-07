@@ -30,6 +30,9 @@ def configure(conf):
 
     conf.check_cfg(package='libccnx-cpp', args=['--cflags', '--libs'], uselib_store='NDNCXX', mandatory=True)
 
+    conf.check_cfg(package='sqlite3', args=['--cflags', '--libs'], uselib_store="SQLITE3", mandatory=True)
+
+
     if not conf.check_cfg(package='openssl', args=['--cflags', '--libs'], uselib_store='SSL', mandatory=False):
         libcrypto = conf.check_cc(lib='crypto',
                                   header_name='openssl/crypto.h',
@@ -43,6 +46,7 @@ def configure(conf):
     conf.load ('ccnx')
     conf.load('qt4')
     conf.load('boost')
+    conf.load('sqlite3')
     conf.check_boost(lib='system test thread')
 
     # boost_version = conf.env.BOOST_VERSION.split('_')
@@ -80,7 +84,7 @@ def build (bld):
                                     'src/**/*.ui', 
                                     'src/**/*.qrc']),
         includes = ". src",
-        use = "QTCORE QTGUI QTSQL NDNCXX BOOST BOOST_SYSTEM",
+        use = "QTCORE QTGUI  SQLITE3 NDNCXX BOOST BOOST_SYSTEM",
         )
 
     if Utils.unversioned_sys_platform () == "darwin":

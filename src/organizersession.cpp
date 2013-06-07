@@ -18,7 +18,7 @@ OrganizerSession::OrganizerSession(const QString &sessionName, const QString &ap
 //    remoteServer *rs = new remoteServer();
  //   rs->init(sAppName, sSessionName);
 //    remoteServer rs =remoteServer::instance();
-	std::clog<<"-1"<<std::endl;
+
     remoteServer::instance().init(sAppName, sSessionName, sSelfName);
 
     // TODO: publish data for organizer discovery
