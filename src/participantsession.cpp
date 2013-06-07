@@ -24,6 +24,8 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
         // TODO: organizer discovery
     }
 
+    recvSharedKey = false;
+    
     QObject::connect(sharedKey, SIGNAL(updateComplete(int)), this, SLOT(renewSharedKey(int)));
 }
 
@@ -146,6 +148,8 @@ int ParticipantSession::sendFetchSharedKeyRemote(const int version, const int ch
 int ParticipantSession::recvSharedKeyRemote(const int version, const int chunkNum, 
                                             const int chunkSize, const std::string &chunkData)
 {
+    recvSharedKey = true;
+    
     std::clog<<"rec shared key"<<"  "<<version<<"  "<<chunkData<<std::endl;
     QByteArray qChunkData(chunkData.c_str());
     return sharedKey->updateChunk(version, chunkNum, chunkSize, qChunkData);
