@@ -57,7 +57,7 @@ int OrganizerSession::sendAcceptJoinRemote(const QString &peerName)
     std::string sSessionName(name.toUtf8().constData());
     std::string sOrganizerName(self->getName().toUtf8().constData());
     std::string sParticipantName(peerName.toUtf8().constData());
-    remote::instance().acceptMembership(sAppName, sSessionName, sParticipantName, sOrganizerName);
+    remote::instance().acceptMembership(sAppName, sSessionName, sOrganizerName, sParticipantName);
     return 0;
 }
 
@@ -81,7 +81,7 @@ int OrganizerSession::sendRejectJoinRemote(const QString &peerName)
     std::string sSessionName(name.toUtf8().constData());
     std::string sOrganizerName(self->getName().toUtf8().constData());
     std::string sParticipantName(peerName.toUtf8().constData());
-    remote::instance().rejectMembership(sAppName, sSessionName, sParticipantName, sOrganizerName);
+    remote::instance().rejectMembership(sAppName, sSessionName, sOrganizerName, sParticipantName);
     return 0;
 }
 
@@ -113,8 +113,8 @@ int OrganizerSession::sendRenewSharedKeyRemote()
         std::string sSessionName(name.toUtf8().constData());
         std::string sOrganizerName(self->getName().toUtf8().constData());
         std::string sParticipantName(peer->getName().toUtf8().constData());
-        remote::instance().updateSharedKey(sAppName, sSessionName, sParticipantName, 
-                                           sOrganizerName, sharedKey->getVersion());
+        remote::instance().updateSharedKey(sAppName, sSessionName, sOrganizerName, 
+                                           sParticipantName, sharedKey->getVersion());
     }
     return 0;
 }
