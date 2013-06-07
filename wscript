@@ -80,7 +80,7 @@ def build (bld):
                                     'src/**/*.ui', 
                                     'src/**/*.qrc']),
         includes = ". src",
-        use = "QTCORE QTGUI NDNCXX BOOST BOOST_SYSTEM",
+        use = "QTCORE QTGUI QTSQL NDNCXX BOOST BOOST_SYSTEM",
         )
 
     if Utils.unversioned_sys_platform () == "darwin":
