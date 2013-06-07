@@ -42,9 +42,6 @@ private:
     std::string endPoint;
     std::string action;
     std::string prefix;
-	int version; //shared-key version
-	int chunkSize;
-	int chunkNum;
 //	static remoteServer *_instance;
 	OrganizerSession *oSession;
 	ParticipantSession *pSession;

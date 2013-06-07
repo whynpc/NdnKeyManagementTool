@@ -29,13 +29,28 @@
  void MainWindow::show_key()
 {
      Application *app_bk = Context::instance()->getApplication(currentApp);
-     if (app_bk != NULL and currentCombo == "participant")
+     if (app_bk != NULL)
      {
-         ParticipantSession *pSession_bk = app_bk->getParticipantSession(currentSession);
-         if (pSession_bk->recvSharedKey)
+         QString test;
+         if (currentCombo == "participant")
+         {
+             ParticipantSession *pSession_bk = app_bk->getParticipantSession(currentSession);
+             pSession_bk->getDebugInfo(test);
+/*            if (pSession_bk->recvSharedKey)
              textEdit->setPlainText("yes");
          else
              textEdit->setPlainText("no");
+  */
+         }
+         else
+         {
+             if (currentCombo == "organizer")
+             {
+                 OrganizerSession *oSession_bk = app_bk->getOrganizerSession(currentSession);
+                 oSession_bk->getDebugInfo(test);
+             }
+         }
+         textEdit->setPlainText(test);
      }
 
  }

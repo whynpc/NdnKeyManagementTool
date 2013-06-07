@@ -144,6 +144,7 @@ int remote::init(std::string prefix,std::string producer,
     interestBaseName.appendComp("xxx"); //rand+auth_token/
     //    InterestBaseName = Ccnx::Name (interestName);
 //    Ccnx::Wrapper handler;
+    std::clog<<interestBaseName<<std::endl;
     handler.sendInterest (interestBaseName,
                           Ccnx::Closure (boost::bind (&remote::runDataCallback, this, _1, _2),
                                          boost::bind (&remote::runTimeoutCallback, this, _1, _2, _3)),
@@ -190,7 +191,7 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
         return;
     
     int code;
-    int version;
+    int version =0;
    	int flag; //1: first packet 0:later packets
     int seqnum = 0;
     int chunkSize = 0;

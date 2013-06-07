@@ -47,6 +47,9 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
  //   std::string action = name.getCompAsString(4); //action
 
     int size = name.size();
+    int version = 0;
+    int chunkNum = 0;
+    int chunkSize = 0;
     Ccnx::Name dataName = name;
     if (action.compare("fetch") == 0){
         std::string lastComponent = name.getCompAsString(size-2);
@@ -121,6 +124,9 @@ Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
   //  std::string action = name.getCompAsString(4); //action
 
     int size = name.size();
+    int version = 0;
+    int chunkNum = 0;
+    int chunkSize = 0;
     Ccnx::Name dataName = name;
     if (action.compare("fetch") == 0){
         std::string lastComponent = name.getCompAsString(size-2);
