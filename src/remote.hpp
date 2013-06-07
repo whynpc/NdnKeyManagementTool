@@ -46,12 +46,12 @@ private:
    remote() {}
    remote(remote const&);
    void operator=(remote const&);
-   Ccnx::Name interestBaseName;
-   Ccnx::Name interestName;
+//   Ccnx::Name interestBaseName;
+ //  Ccnx::Name interestName;
    Ccnx::Wrapper handler;
-   static remote* _instance;
-   OrganizerSession *oSession;
-	 ParticipantSession *pSession;
+//   static remote* _instance;
+//   OrganizerSession *oSession;
+//	 ParticipantSession *pSession;
 //	 int chunk;
  //  std::string myname;
     //  std::string payload;

@@ -39,12 +39,15 @@ int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)
 } */
 
 
-Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
+Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
+	    OrganizerSession *oSession,	ParticipantSession *pSession){
     int flag;
-//    std::string consumer = name.getCompAsString(1); //consumer
-//    std::string producer = name.getCompAsString(2); //producer
-//    std::string endPoint = name.getCompAsString(3); //endpoint
- //   std::string action = name.getCompAsString(4); //action
+
+     std::string consumer = name.getCompAsString(2); //consumer
+    std::string producer = name.getCompAsString(1); //producer
+    std::string endPoint = name.getCompAsString(3); //endpoint
+    std::string action = name.getCompAsString(4); //action
+//    std::string prefix = name.getCompAsString(0);
 
     int size = name.size();
     int version = 0;
@@ -116,12 +119,17 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret){
     return dataName;
 };
 
-Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
+Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret,
+	 OrganizerSession *oSession,	ParticipantSession *pSession){
     int flag;
 //    std::string consumer = name.getCompAsString(1); //consumer
 //    std::string producer = name.getCompAsString(2); //producer
  //   std::string endPoint = name.getCompAsString(3); //endpoint
   //  std::string action = name.getCompAsString(4); //action
+    std::string consumer = name.getCompAsString(2); //consumer
+    std::string producer = name.getCompAsString(1); //producer
+    std::string endPoint = name.getCompAsString(3); //endpoint
+    std::string action = name.getCompAsString(4); //action
 
     int size = name.size();
     int version = 0;
@@ -179,8 +187,9 @@ Ccnx::Name remoteServer::parsePublicKey(Ccnx::Name name, std::string &ret){
     return dataName;
 };
 
-Ccnx::Name remoteServer::parseMembership(Ccnx::Name name){
-//    std::string action = name.getCompAsString(4); //action
+Ccnx::Name remoteServer::parseMembership(Ccnx::Name name,	 OrganizerSession *oSession,	ParticipantSession *pSession){
+    std::string action = name.getCompAsString(4); //action
+    std::string consumer = name.getCompAsString(2); //consumer
     Ccnx::Name dataName = name;
     if (action.compare("join") == 0 ||
         action.compare("accept") == 0 ||
@@ -213,29 +222,30 @@ Ccnx::Name remoteServer::parseMembership(Ccnx::Name name){
 void remoteServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
     Ccnx::Name dataName;
     clog<<"on interest data name    "<<name<<endl;
-    consumer = name.getCompAsString(2); //consumer
-    producer = name.getCompAsString(1); //producer
-    endPoint = name.getCompAsString(3); //endpoint
-    action = name.getCompAsString(4); //action
-    prefix = name.getCompAsString(0);
+    std::string consumer = name.getCompAsString(2); //consumer
+    std::string producer = name.getCompAsString(1); //producer
+    std::string endPoint = name.getCompAsString(3); //endpoint
+    std::string action = name.getCompAsString(4); //action
+    std::string prefix = name.getCompAsString(0);
     std::string app;
     std::string session;
     vector <string> app_session;
     boost::split(app_session, prefix,boost::is_any_of("_"));        	
     app = app_session[0];
     session = app_session[1];	
-    Context::instance()->retrieveSession(app, session, &oSession, &pSession);
-    	
+    OrganizerSession *oSession;
+    ParticipantSession *pSession;
+    Context::instance()->retrieveSession(app, session, &oSession, &pSession);    	
     std::string msg("");
     //resolving name
     if (endPoint.compare("shared-key") == 0){
-        dataName = parseSharedKey(name, msg);
+        dataName = parseSharedKey(name,msg,oSession,pSession);
     }
     if (endPoint.compare("membership") == 0){
-        dataName = parseMembership(name);
+        dataName = parseMembership(name,oSession,pSession);
     }
     if (endPoint.compare("public-key") == 0){
-        dataName = parsePublicKey(name, msg);
+        dataName = parsePublicKey(name, msg,oSession,pSession);
     }
     std::clog<<"dataname back to consumer  "<<dataName<<std::endl;
     std::clog<<"sent data msg" <<msg<<std::endl;

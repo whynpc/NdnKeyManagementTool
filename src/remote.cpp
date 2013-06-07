@@ -135,7 +135,7 @@ int remote::init(std::string prefix,std::string producer,
                  std::string consumer,std::string
                  endpoint,std::string action){
     
-    interestBaseName = Ccnx::Name();
+    Ccnx::Name interestBaseName = Ccnx::Name();
     interestBaseName.appendComp(prefix);
     interestBaseName.appendComp(producer);
     interestBaseName.appendComp(consumer);
@@ -251,6 +251,7 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     {
 	    for (seqnum = 1; seqnum < chunkSize; seqnum++)
   	  {
+  	  	Ccnx::Name interestName = Ccnx::Name();
         interestName = getBaseName(name);
         interestName.appendComp("v="+boost::lexical_cast <string>(version));
     	  interestName.appendComp("chunk="+(boost::lexical_cast <string>(seqnum+1)));
