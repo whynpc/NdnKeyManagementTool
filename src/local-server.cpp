@@ -18,37 +18,39 @@ using namespace Ccnx;
 
 Ccnx::Name localServer::parseSession(Ccnx::Name name){
   std::string action = name.getCompAsString(6); //action
-  std::string organizer = name.getCompAsString(4); //organizer
-  std::string participant = name.getCompAsString(5); //participant
+  std::string organizer = name.getCompAsString(3); //organizer
+  std::string participant = name.getCompAsString(4); //participant
   std::string appname = name.getCompAsString(2); //app
   Ccnx::Name dataName = name;
   Application *application;
   Context::instance()->retrieveApplication(appname, &application);
-  	 	
+  	 
   vector<std::string> tmp;
-  std::string session = tmp[1];
-  boost::split(tmp,action,boost::is_any_of("_"));            
-  if (boost::starts_with(action,"create="))
+  boost::split(tmp,action,boost::is_any_of("_"));
+    std::string session = tmp[1];
+    cout<<"action "<<tmp[0]<<"  "<<tmp[1]<<endl;
+  if (tmp[0].compare("create") == 0)
     {
       dataName.appendComp("code=0");
+        cout<<"create "<<session<<"  "<<organizer<<endl;
       application->recvCreateOrganizerSession(session,organizer);
     }
-  if (boost::starts_with(action,"participate="))
+  if (tmp[0].compare("participate") == 0)
     {
       dataName.appendComp("code=0");
       application->recvCreateParticipantSession(session,participant,organizer);
     }
-  if (boost::starts_with(action,"destroy="))
+  if (tmp[0].compare("destroy") == 0)
     {
       dataName.appendComp("code=0");
       application->recvDestroyOrganizerSession(session);
     }
-  if (boost::starts_with(action,"quit="))
+  if (tmp[0].compare("quit") == 0)
     {
       dataName.appendComp("code=0");
       application->recvDestroyParticipantSession(session);
     }
-  if (boost::starts_with(action,"join="))
+  if (tmp[0].compare("join") == 0)
     {
       Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
 			if (pSession)
@@ -63,35 +65,15 @@ Ccnx::Name localServer::parseSession(Ccnx::Name name){
 Ccnx::Name localServer::parseSharedKey(Ccnx::Name name, 
                                        std::string &ret)
 {
-	std::string appname = name.getCompAsString(2); //app
-  std::string action = name.getCompAsString(7); //action
+  std::string appname = name.getCompAsString(2); //app
+  std::string action = name.getCompAsString(6); //action
   Ccnx::Name dataName = name;
   int size = name.size();
-  vector<std::string> tmp;
-  boost::split(tmp,action,boost::is_any_of("="));
-  std::string session = tmp[1];
-  Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
-  if (boost::starts_with(action,"create="))
-    {
-      if (oSession)
-      {
-      	oSession->recvCreateSharedKeyLocal();
-      }
-      dataName.appendComp("code=0");
-    }
-  if (boost::starts_with(action,"update="))
-    {
-      int version = atoi(tmp[2].c_str());
-      if (oSession)
-      {
-      	oSession->recvRenewSharedKeyLocal(version);
-      }
- //     orgsession->recvRenewSharedKeyLocal(version);
-      dataName.appendComp("code=0");
-    }
+
   if (action.compare("fetch") == 0)
     {
         std::string lastComponent = name.getCompAsString(size-2);
+        cout<<"last component      "<<lastComponent<<endl;
         int flag = 0;
         if (boost::starts_with(lastComponent,"chunk="))
         {
@@ -100,11 +82,12 @@ Ccnx::Name localServer::parseSharedKey(Ccnx::Name name,
         else{
             flag = 0;  //para
         }
+        cout<<"flag     "<<flag<<endl;
         //  
         if (flag == 0){
         	  chunkSize = 0;
-        	  chunkNum = 0;        	  
-        	  version;
+        	  chunkNum = 0;
+        	  version = 0;
         	  if (oSession)
         	  {
 						  oSession->recvFetchSharedKeyLocal(version, chunkNum, chunkSize, ret);
@@ -113,6 +96,7 @@ Ccnx::Name localServer::parseSharedKey(Ccnx::Name name,
         	  {
 						  pSession->recvFetchSharedKeyLocal(version, chunkNum, chunkSize, ret);
             }
+            cout<<"ret   "<<ret<<endl;
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
             tmp.append(v);
@@ -141,13 +125,42 @@ Ccnx::Name localServer::parseSharedKey(Ccnx::Name name,
         }
 
     }
-  return dataName;
+    
+    vector<std::string> tmp;
+    boost::split(tmp,action,boost::is_any_of("_"));
+    if (tmp.size() > 1)
+    {
+        std::string session = tmp[1];
+        cout<<"action "<<tmp[0]<<"  "<<tmp[1]<<endl;
+        Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
+        if (tmp[0].compare("create") == 0)
+        {
+            if (oSession)
+            {
+                oSession->recvCreateSharedKeyLocal();
+            }
+            dataName.appendComp("code=0");
+        }
+        if (tmp[0].compare("update") == 0)
+        {
+            int version = atoi(tmp[2].c_str());
+            if (oSession)
+            {
+                oSession->recvRenewSharedKeyLocal(version);
+            }
+            //     orgsession->recvRenewSharedKeyLocal(version);
+            dataName.appendComp("code=0");
+        }
+    }
+    
+   return dataName;
 }
 
 void localServer::OnInterest (Ccnx::Name name, Ccnx::Selectors selectors){
   Ccnx::Name dataName;
-  //    cout<<name<<endl;
-  std::string endPoint = name.getCompAsString(4); //endpoint
+  cout<<"on interst name  "<<name<<endl;
+  std::string endPoint = name.getCompAsString(5); //endpoint
+    cout<<"endpoint "<<endPoint<<endl;
   std::string dataContent;
   if (endPoint.compare("session") == 0){
     dataName = parseSession(name);
@@ -164,11 +177,9 @@ int  localServer::init(std::string appName){
     interestBaseName.appendComp("Local");
     interestBaseName.appendComp("KeyManagementTool");
     interestBaseName.appendComp(appName);
+      cout<<"interest filter name  "<<interestBaseName<<endl;
     handler.setInterestFilter (interestBaseName, boost::bind (&localServer::OnInterest, this, _1, _2));
-    while (true)
-    {
-      sleep (1);
-    }
+
     return 0;
 }
 
