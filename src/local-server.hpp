@@ -20,25 +20,23 @@ public:
         static localServer _instance;
         return _instance;
     }
-	Ccnx::Name InterestBaseName;
-	Ccnx::Wrapper handler;
+    localServer() {}
+    localServer(localServer const&);
+    void operator=(localServer const&);
 	void OnInterest (Ccnx::Name name, Ccnx::Selectors selectors);
-
-  Ccnx::Name parseSession(Ccnx::Name name);
-  Ccnx::Name parseSharedKey(Ccnx::Name name, std::string &ret);
-  int  init(std::string appName);
+    Ccnx::Name parseSession(Ccnx::Name name);
+    Ccnx::Name parseSharedKey(Ccnx::Name name, std::string &ret);
+    int  init(std::string appName);
 private:
-  localServer() {}
-  localServer(localServer const&);
-  void operator=(localServer const&);
-  OrganizerSession *oSession;
-  ParticipantSession *pSession;
-  int chunkSize;
-  int chunkNum;
-  int version;
-  static localServer *_instance;
-//private:
-//	map<std::string,std::string> sessionInfo;
+	Ccnx::Name InterestBaseName;
+    OrganizerSession *oSession;
+    ParticipantSession *pSession;
+    Ccnx::Wrapper handler;
+    int chunkSize;
+    int chunkNum;
+    int version;
+    //private:
+    //	map<std::string,std::string> sessionInfo;
 };
 
 #endif//local-server
