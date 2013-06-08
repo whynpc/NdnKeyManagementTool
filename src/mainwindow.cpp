@@ -11,7 +11,8 @@
 
  MainWindow::MainWindow()
  {
-     userName = "Tom";
+//     userName = "Tom";
+     currentCombo = "organizer";
      createActions();
      creatMenu();
      textEdit = new QPlainTextEdit;

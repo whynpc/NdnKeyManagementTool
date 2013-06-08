@@ -50,7 +50,7 @@ int remote::split( string& str, vector<string>& ret_, string sep)
     }
     return 0;
 }
-/*
+
 int do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_len)
 {
     RSA *keypair;
@@ -61,7 +61,7 @@ int do_decrypt(char *to, char *from, unsigned char *key,int keylen, int encrypt_
     int decrypt_len = RSA_private_decrypt(encrypt_len, (unsigned char*)from,
                                           (unsigned char*)(to), keypair, RSA_PKCS1_OAEP_PADDING);
     return decrypt_len;
-}*/
+}
 
 void remote::fetchSharedKey(std::string app, std::string session,
                             std::string consumer,std::string producer)
@@ -240,6 +240,11 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
           // get private key
           // char *decrypt;
           //    do_decrypt(decrypt,(char*)Ccnx::head (*content), key, keylen, encrypt_len);
+//          char *from = (char *)ret.c_str();
+//          char *to = NULL ;
+//          char *key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDuSJtsqO38w2PQFrX7ZJZDZGP16hrnDhmoTqz3jk4d62e1ne2709ZxzMMIgIGEooR9xOHcBz9fUmzQu4k92KrFU7HEuNPRgtDlJlYiW49FMezn+AcOItMx0ec+wpVEbWNaBO4bIS9EkGYioXqK6LJ8FWE6HZIP9K4Z3rE/zV7W8wIDAQAB";
+//          do_decrypt(to,(char*)Ccnx::head (*content), key, keylen);
+//          do_encrypt(&to, from,(unsigned char *)key,512);
           if (pSession)
           {
             pSession->recvSharedKeyRemote(version, seqnum, chunkSize,

@@ -24,7 +24,7 @@ remoteServer remoteServer::instance() {
 }
 */
 
-/*
+
 int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)
 {
     RSA *keypair;
@@ -36,7 +36,7 @@ int remoteServer::do_encrypt(char **to, char *from, unsigned char *key,int len)
 		(unsigned char*)(*to), keypair, RSA_PKCS1_OAEP_PADDING);
                                                                              
     return encrypt_len;
-} */
+} 
 
 
 Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
@@ -73,8 +73,9 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
               }
             char *from = (char *)ret.c_str();
             char *to = NULL ;
-//          get public key
-//           do_encrypt(&to, from,key,len);
+            char *key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDuSJtsqO38w2PQFrX7ZJZDZGP16hrnDhmoTqz3jk4d62e1ne2709ZxzMMIgIGEooR9xOHcBz9fUmzQu4k92KrFU7HEuNPRgtDlJlYiW49FMezn+AcOItMx0ec+wpVEbWNaBO4bIS9EkGYioXqK6LJ8FWE6HZIP9K4Z3rE/zV7W8wIDAQAB";
+            do_encrypt(&to, from,(unsigned char *)key,512);
+            ret = std::string(to);
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
             tmp.append(v);
