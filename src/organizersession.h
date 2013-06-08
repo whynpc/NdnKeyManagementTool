@@ -46,6 +46,9 @@ public:
         // recv Public Key Data from participant
     int recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum,
                             const int chunkSize, const std::string &chunkData);
+        // recv organizer discovery interest
+    int recvOrganizerDiscoveryRemote(const std::string &peerName, std::string &outOrganizerName) const;
+    
 
     void getParticipantNames(QStringList &outputList) const;
     void getCandidateNames(QStringList &outputList) const;

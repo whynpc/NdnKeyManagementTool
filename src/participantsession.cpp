@@ -13,17 +13,13 @@ ParticipantSession::ParticipantSession(const QString &sessionName, const QString
     state = ParticipantSession::INIT;
     if (!organizerName.isEmpty()) {
         organizer = new Peer(organizerName, this);
-        // publish data: /prefix/self-name/organizer-name/
-        std::string sAppName(appName.toUtf8().constData());
-        std::string sSessionName(name.toUtf8().constData());
-        std::string sProducer(selfName.toUtf8().constData());
-        remoteServer::instance().init(sAppName, sSessionName,sProducer);
     } else {
         organizer = NULL;
-        // TODO: publishe data for organizer discovery
-        // TODO: organizer discovery
     }
-    
+    std::string sAppName(appName.toUtf8().constData());
+    std::string sSessionName(name.toUtf8().constData());
+    std::string sProducer(selfName.toUtf8().constData());
+    remoteServer::instance().init(sAppName, sSessionName,sProducer);
     
     QObject::connect(sharedKey, SIGNAL(updateComplete(int)), this, SLOT(renewSharedKey(int)));
 }
@@ -233,6 +229,28 @@ void ParticipantSession::getDebugInfo(QString &outputBuffer) const
     sharedKey->getDebugInfo(outputBuffer);
     outputBuffer.append("\n");
 }
+
+int ParticipantSession::discoverOrganizer()
+{
+    this->sendOrganizerDiscoveryRemote();
+    return 0;
+}
+
+int ParticipantSession::sendOrganizerDiscoveryRemote()
+{
+        // TODO: send interest 
+    return 0;
+}
+
+int ParticipantSession::recvOrganizerDiscoveryDataRemote(const std::string &peerName)
+{
+    if (organizer == NULL) {
+        QString organizerName(peerName.c_str());
+        organizer = new Peer(organizerName, this);
+    }
+    return 0;
+}
+
 
 
 #if WAF

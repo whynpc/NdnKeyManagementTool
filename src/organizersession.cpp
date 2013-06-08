@@ -171,7 +171,8 @@ int OrganizerSession::recvRejectJoinLocal(const std::string &peerName)
     return 0;
 }
 
-int OrganizerSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &chunkSize, std::string &buffer)
+int OrganizerSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, 
+                                              int &chunkSize, std::string &buffer)
 {
     if (version == 0) {
         version = sharedKey->getVersion();
@@ -192,8 +193,9 @@ int OrganizerSession::recvFetchSharedKeyLocal(int &version, int &chunkNum, int &
     }
 }
 
-int OrganizerSession::recvPublicKeyRemote(const std::string &peerName, const int version, const int chunkNum, 
-                                          const int chunkSize, const std::string &chunkData)
+int OrganizerSession::recvPublicKeyRemote(const std::string &peerName, const int version, 
+                                          const int chunkNum, const int chunkSize, 
+                                          const std::string &chunkData)
 {
     return 0;
 }
@@ -233,6 +235,13 @@ void OrganizerSession::getDebugInfo(QString &outputBuffer) const
     outputBuffer.append("\nShared Key: ");
     sharedKey->getDebugInfo(outputBuffer);
     outputBuffer.append("\n");
+}
+
+int OrganizerSession::recvOrganizerDiscoveryRemote(const std::string &peerName, 
+                                                    std::string &outOrganizerName) const
+{
+    outOrganizerName.append(self->getName().toUtf8().constData());
+    return 0;
 }
 
 
