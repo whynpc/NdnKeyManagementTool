@@ -46,7 +46,6 @@ def configure(conf):
     conf.load ('ccnx')
     conf.load('qt4')
     conf.load('boost')
-    conf.load('openssl')
     conf.load('sqlite3')
     conf.check_boost(lib='system test thread')
 
@@ -85,7 +84,7 @@ def build (bld):
                                     'src/**/*.ui', 
                                     'src/**/*.qrc']),
         includes = ". src",
-        use = "QTCORE QTGUI  SQLITE3 NDNCXX BOOST BOOST_SYSTEM",
+        use = "QTCORE QTGUI  SQLITE3 NDNCXX BOOST BOOST_SYSTEM SSL",
         )
 
     if Utils.unversioned_sys_platform () == "darwin":
