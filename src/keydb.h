@@ -5,6 +5,7 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #include <openssl/evp.h>
 #include <openssl/pem.h>
@@ -22,7 +23,17 @@ using namespace std;
 class KeyDB
 {
 public:
-    KeyDB();
+    static KeyDB& instance()
+    {
+        static KeyDB _instance;
+        return _instance;
+    }
+    KeyDB() {   dbOpen = false;
+    	string DB = "KeyDB.db"; }
+    KeyDB(KeyDB const&);
+    void operator=(KeyDB const&);
+    
+//    KeyDB();
     bool connectDB();
     void disconnectDB ();
 
@@ -34,24 +45,34 @@ public:
     int importKey(string fname, string &pubKey);
     EVP_PKEY* str2Key(string pubKey);
     int exportKey(string fname, string pubKey);
+    int getAllKeyNames(vector<string> &keyNames);
+
+    //For the Table "priKey"
+    int removePriKey();
+    int insertPriKey(string keyName, string priKey);
+    int importPriKey(string fname, string &priKey);
+    string getPriKey();
+    string getPriKeyName();
+    EVP_PKEY* str2priKey(string priKey);
 
     //For the Table "user"
     enum scope{
-        local,
+        local = 0,
         global
     };
     int addUser(string app, scope sc, string keyName, string user = "");
-
+    int getMetaData(string keyName, vector<string> &mData);
     //Joining statement
     //Returns An array of strings {keyName, pubKey, locator} via passed-in argument key
     int getKeyFromUser(string app, scope sc, string key[], string user = "");
 
 
+
 private:
     bool dbOpen;
     sqlite3 *db;
-    //const string DB = "KeyDB.db";
-	const string DB;
+    string DB;
+ //   const string DB = "KeyDB.db";
 };
 
 #endif // KEYDB_H

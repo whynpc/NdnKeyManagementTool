@@ -13,6 +13,7 @@
 #include "organizersession.h"
 #include "participantsession.h"
 #include "context.h"
+#include "keydb.h"
 using namespace std;
 
 
@@ -237,18 +238,27 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
     	 
       if (endPoint.compare("shared-key") == 0)
       {
-          // get private key
-          // char *decrypt;
-          //    do_decrypt(decrypt,(char*)Ccnx::head (*content), key, keylen, encrypt_len);
-//          char *from = (char *)ret.c_str();
-//          char *to = NULL ;
-//          char *key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDuSJtsqO38w2PQFrX7ZJZDZGP16hrnDhmoTqz3jk4d62e1ne2709ZxzMMIgIGEooR9xOHcBz9fUmzQu4k92KrFU7HEuNPRgtDlJlYiW49FMezn+AcOItMx0ec+wpVEbWNaBO4bIS9EkGYioXqK6LJ8FWE6HZIP9K4Z3rE/zV7W8wIDAQAB";
-//          do_decrypt(to,(char*)Ccnx::head (*content), key, keylen);
-//          do_encrypt(&to, from,(unsigned char *)key,512);
+          //decrypt
+          std::string privateKey;
+          privateKey = KeyDB::instance().getPriKey();
+          EVP_PKEY *pri_key = KeyDB::instance().str2priKey(privateKey);
+          std::string encrypt_string = string ((char*)Ccnx::head (*content), content->size ());
+          char *encrypt = (char *)(encrypt_string.c_str());
+          char *decrypt = NULL;
+          RSA *decrypt_key;
+          int encrypt_len  = content->size();
+          decrypt_key = EVP_PKEY_get1_RSA(pri_key);  //important line
+          decrypt = (char *)malloc(encrypt_len);
+          if(RSA_private_decrypt(encrypt_len, (unsigned char*)encrypt, (unsigned char*)decrypt, decrypt_key, RSA_PKCS1_OAEP_PADDING) == -1)
+          {
+              ERR_load_crypto_strings();
+          }
+          std::string decrypt_string = string(decrypt);
+          
           if (pSession)
           {
             pSession->recvSharedKeyRemote(version, seqnum, chunkSize,
-              string ((char*)Ccnx::head (*content), content->size ()));
+              decrypt_string);
           }
       }
     }

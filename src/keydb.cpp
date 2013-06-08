@@ -1,9 +1,9 @@
 #include "keydb.h"
 
-KeyDB::KeyDB()
+/*KeyDB::KeyDB()
 {
     dbOpen = false;
-}
+}*/
 
 bool KeyDB::connectDB(){
     if (sqlite3_open(DB.c_str(), &db) == SQLITE_OK){
@@ -59,11 +59,11 @@ string KeyDB::getKey(string keyName){
     string statement = "SELECT pubKey FROM pubKey WHERE keyName = \"" + keyName + "\";";
     sqlite3_stmt *sqlStmt;
     int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
-    const char * key;
+    string key;
     if (errno == SQLITE_OK){
         int status = sqlite3_step(sqlStmt);
         if (status == SQLITE_ROW)
-            key = (const char *)sqlite3_column_text (sqlStmt, 0);
+            key = string((const char*)sqlite3_column_text (sqlStmt, 0));
         sqlite3_finalize(sqlStmt);;
         return key;
     }
@@ -75,12 +75,12 @@ string KeyDB::getLocator(string keyName){
     string statement = "SELECT locator FROM pubKey WHERE keyName = \"" + keyName + "\";";
     sqlite3_stmt *sqlStmt;
     int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
-    const char * locator;
+    string locator = "";
     if (errno == SQLITE_OK){
         int status = sqlite3_step(sqlStmt);
-        if (status == SQLITE_ROW)
-            locator = (const char *)sqlite3_column_text (sqlStmt, 0);
-        sqlite3_finalize(sqlStmt);;
+        if (status == SQLITE_ROW && sqlite3_column_text (sqlStmt, 0))
+            locator = string((const char*)sqlite3_column_text (sqlStmt, 0));
+        sqlite3_finalize(sqlStmt);
         return locator;
     }
     return sqlite3_errstr(errno);
@@ -127,6 +127,111 @@ int KeyDB::exportKey(string fname, string pubKey){
     return 0;
 }
 
+int KeyDB::getAllKeyNames(vector<string> &keyNames){
+    string statement;
+    statement = "SELECT keyName FROM pubKey;";
+    sqlite3_stmt *sqlStmt;
+    int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    if (errno == SQLITE_OK){
+        while(1){
+            int status = sqlite3_step(sqlStmt);
+            if (status == SQLITE_ROW)
+                keyNames.push_back((const char *)sqlite3_column_text (sqlStmt, 0));
+            else if (status == SQLITE_DONE)
+                break;
+            else
+                return status;
+
+        }
+        sqlite3_finalize(sqlStmt);
+        return 0;
+    }
+    return errno;
+}
+
+
+int KeyDB::removePriKey(){
+    string statement = "DELETE FROM priKey;";
+    sqlite3_stmt *sqlStmt;
+    int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    if (errno == SQLITE_OK){
+        int status = sqlite3_step(sqlStmt);
+        sqlite3_finalize(sqlStmt);
+        return status;
+    }
+    cerr << sqlite3_errstr(errno) << endl;
+    return errno;
+}
+
+int KeyDB::insertPriKey(string keyName, string priKey){
+    removePriKey(); //there can be only one private key
+    string statement = "INSERT INTO priKey values (\"" + keyName + "\", \"" + priKey + "\");";
+    sqlite3_stmt *sqlStmt;
+    int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    if (errno == SQLITE_OK){
+        int status = sqlite3_step(sqlStmt);
+        sqlite3_finalize(sqlStmt);
+        return status;
+    }
+    cerr << sqlite3_errstr(errno) << endl;
+    return errno;
+}
+
+int KeyDB::importPriKey(string fname, string &priKey){
+    ifstream keyFile(fname.c_str());
+
+    if (!keyFile) {
+        cerr << "Unable to open file " << fname << endl;
+        exit(1);
+    }
+
+    for (string buf; getline(keyFile, buf);)
+        priKey += buf + "\n";
+
+    return 0;
+}
+
+string KeyDB::getPriKey(){
+    string statement = "SELECT priKey FROM priKey;"; //there is only one private key
+    sqlite3_stmt *sqlStmt;
+    int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    string key;
+    if (errno == SQLITE_OK){
+        int status = sqlite3_step(sqlStmt);
+        if (status == SQLITE_ROW)
+            key = string((const char*)sqlite3_column_text (sqlStmt, 0));
+        sqlite3_finalize(sqlStmt);;
+        return key;
+    }
+    return sqlite3_errstr(errno);
+}
+
+string KeyDB::getPriKeyName(){
+    string statement = "SELECT keyName FROM priKey;";
+    sqlite3_stmt *sqlStmt;
+    int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    string name;
+    if (errno == SQLITE_OK){
+        int status = sqlite3_step(sqlStmt);
+        if (status == SQLITE_ROW)
+            name = string((const char*)sqlite3_column_text (sqlStmt, 0));
+        sqlite3_finalize(sqlStmt);;
+        return name;
+    }
+    return sqlite3_errstr(errno);
+}
+
+EVP_PKEY* KeyDB::str2priKey(string priKey){
+    char* buf = (char*)malloc(priKey.size());
+    strcpy(buf, priKey.c_str());
+    BIO* bp = BIO_new_mem_buf(buf, priKey.length());
+    EVP_PKEY* kObj = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL);
+    BIO_free(bp);
+    free(buf);
+    return kObj;
+}
+
+
 //Adds an row into the "user" table
 int KeyDB::addUser(string app, scope sc, string keyName, string user){
     string statement = "";
@@ -136,7 +241,6 @@ int KeyDB::addUser(string app, scope sc, string keyName, string user){
         statement = "INSERT INTO user values (NULL, \"" + app + "\", " + strSc + ", \"" + keyName + "\");";
     else
         statement = "INSERT INTO user values (\"" + user + "\", \"" + app + "\", " + strSc + ", \"" + keyName + "\");";
-    cout << statement << endl;
     sqlite3_stmt *sqlStmt;
     int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
     if (errno == SQLITE_OK){
@@ -145,6 +249,33 @@ int KeyDB::addUser(string app, scope sc, string keyName, string user){
         return status;
     }
     cerr << sqlite3_errstr(errno) << endl;
+    return errno;
+}
+
+//returns metadata in the form of "userName, appname, scope"
+int KeyDB::getMetaData(string keyName, vector<string> &mData){
+    string statement = "SELECT * FROM user WHERE keyName = \"" + keyName + "\";";
+    sqlite3_stmt *sqlStmt;
+    string metaData = "";
+    int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    if (errno == SQLITE_OK){
+        while (1){
+        int status = sqlite3_step(sqlStmt);
+            if (status == SQLITE_ROW){
+                if (sqlite3_column_text (sqlStmt, 0)){
+                    metaData = metaData + "User Name: " +
+                               (const char *)sqlite3_column_text (sqlStmt, 0) + "| ";
+                }
+                metaData = metaData + "App Name: " + (const char *)sqlite3_column_text (sqlStmt, 1);
+                metaData = metaData + "| Scope: " + (const char *)sqlite3_column_text (sqlStmt, 2);
+                mData.push_back(metaData);
+                metaData = "";
+            }else{
+                sqlite3_finalize(sqlStmt);;
+                return status;
+            }
+        }
+    }
     return errno;
 }
 
@@ -160,7 +291,6 @@ int KeyDB::getKeyFromUser(string app, scope sc, string key[], string name){
     else
         statement = "SELECT * FROM pubKey, user WHERE pubKey.keyName = user.keyName AND \"" +
                 app + "\" = user.appName AND " + strSc + " = scope; AND \"" + name + "\" = uName;";
-    cout << statement << endl;
     sqlite3_stmt *sqlStmt;
     int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
     if (errno == SQLITE_OK){

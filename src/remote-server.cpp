@@ -12,7 +12,7 @@
 #include "organizersession.h"
 #include "participantsession.h"
 #include "context.h"
-
+#include "keydb.h"
 using namespace std;
 
 /*
@@ -47,7 +47,7 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
     std::string producer = name.getCompAsString(1); //producer
     std::string endPoint = name.getCompAsString(3); //endpoint
     std::string action = name.getCompAsString(4); //action
-//    std::string prefix = name.getCompAsString(0);
+    std::string prefix = name.getCompAsString(0); //prefix
 
     int size = name.size();
     int version = 0;
@@ -71,11 +71,26 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
         	  {
                   oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
               }
-            char *from = (char *)ret.c_str();
+/*            char *from = (char *)ret.c_str();
             char *to = NULL ;
             char *key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDuSJtsqO38w2PQFrX7ZJZDZGP16hrnDhmoTqz3jk4d62e1ne2709ZxzMMIgIGEooR9xOHcBz9fUmzQu4k92KrFU7HEuNPRgtDlJlYiW49FMezn+AcOItMx0ec+wpVEbWNaBO4bIS9EkGYioXqK6LJ8FWE6HZIP9K4Z3rE/zV7W8wIDAQAB";
             do_encrypt(&to, from,(unsigned char *)key,512);
             ret = std::string(to);
+*/
+//encrypt
+						std::string publicKey[3];
+						KeyDB::instance().getKeyFromUser(prefix,(KeyDB::local), publicKey,consumer);
+            EVP_PKEY *pub_key = KeyDB::instance().str2priKey(publicKey[1]);
+            std::string plain_string = ret;          
+            char *plain = (char *)(plain_string.c_str());
+						RSA *encrypt_key = EVP_PKEY_get1_RSA(pub_key);
+            int encrypt_len;
+            char *encrypt = (char *)malloc(RSA_size(encrypt_key));  
+            if((encrypt_len = RSA_public_encrypt(strlen(plain), (unsigned char*)plain, 
+    					(unsigned char*)encrypt, encrypt_key, RSA_PKCS1_OAEP_PADDING)) == -1) {
+					        ERR_load_crypto_strings();
+    				}
+						ret = string(encrypt);							
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
             tmp.append(v);
