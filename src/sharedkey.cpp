@@ -12,12 +12,14 @@ SharedKey::SharedKey(QObject *parent)
 int SharedKey::create()
 {
     QByteArray dummyKey("sharedkey");
+    dummyKey.append('\0');
     updateChunk(1, 1, 1, dummyKey);
 }
 
 int SharedKey::renew()
 {
     QByteArray dummyKey("renewedSharedkey");
+    dummyKey.append('\0');
     updateChunk(version + 1, 1, 1, dummyKey);
 }
 

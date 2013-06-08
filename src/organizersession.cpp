@@ -151,7 +151,7 @@ int OrganizerSession::recvFetchSharedKeyRemote(const std::string &peerName, int 
             sharedKey->readChunk(chunkNum, buf);
             buffer.append(buf.data());
            // buffer.append("sharedKeyContent");
-            return 0;
+            return buf.length();
         }
     }
     return -1;     
