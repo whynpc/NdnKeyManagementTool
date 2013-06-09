@@ -78,19 +78,70 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
             ret = std::string(to);
 */
 //encrypt
-						std::string publicKey[3];
-						KeyDB::instance().getKeyFromUser(prefix,(KeyDB::local), publicKey,consumer);
-            EVP_PKEY *pub_key = KeyDB::instance().str2priKey(publicKey[1]);
-            std::string plain_string = ret;          
-            char *plain = (char *)(plain_string.c_str());
-						RSA *encrypt_key = EVP_PKEY_get1_RSA(pub_key);
+            vector<std::string> tmp2;
+            boost::split(tmp2,prefix,boost::is_any_of("_"));
+            std::string app = tmp2[0];
+            std::string publicKey[3];
+            KeyDB::instance().getKeyFromUser(app,(KeyDB::global), publicKey,consumer);
+      //      cout<<"after fetch"<<endl;
+       //     cout<<"key content"<<publicKey[1]<<endl;
+            EVP_PKEY *pub_key = KeyDB::instance().str2Key(publicKey[1]);
+     //       std::string plain_string = ret;
+   //         cout<<"plain "<<plain_string<<endl;
+ //           char *plain2 = (char *)(plain_string.c_str());
+	//					cout<<pub_key->type<<endl;
+	//					cout<<pub_key->pkey.ptr<<endl;
+            char plain[128];
+            sprintf(plain,"%s",ret.c_str());
+            cout<<"aaaaa"<<endl;
+//            cout<<plain<<endl;
+//            plain[3]='\0';
+//            plain[plain_string.size()] = '\0';
+    
+      //      cout<<"sadfsf"<<endl;
+    /*for test*/
+/*            RSA *encrypt_key;
+            FILE *rsa_pkey_file;
+            rsa_pkey_file = fopen("../db/pub1.pub", "r");
+            if (rsa_pkey_file == NULL)
+            {
+                cout<<"no pointer"<<endl;
+            }
+            cout<<"before bbbbb"<<endl;
+				    if (!PEM_read_RSA_PUBKEY(rsa_pkey_file, &encrypt_key, NULL, NULL))
+    				{
+        			fprintf(stderr, "Error loading RSA Public Key File.\n");
+        			ERR_print_errors_fp(stderr);
+    				}
+            fclose(rsa_pkey_file);
+  */  				/*test end*/
+  
+            cout<<"bbbbb"<<endl;
+  
+            RSA *encrypt_key;
+        //    EVP_PKEY_set1_RSA(pub_key,encrypt_key);
+            encrypt_key = EVP_PKEY_get1_RSA(pub_key);
+            cout<<"get key "<<endl;
             int encrypt_len;
-            char *encrypt = (char *)malloc(RSA_size(encrypt_key));  
+            cout<<RSA_size(encrypt_key)<<endl;
+            char *encrypt = (char *)malloc(RSA_size(encrypt_key));
+//            memset(encrypt,0,RSA_size(encrypt_key));
+            cout<<"before encrpyt"<<endl;
             if((encrypt_len = RSA_public_encrypt(strlen(plain), (unsigned char*)plain, 
     					(unsigned char*)encrypt, encrypt_key, RSA_PKCS1_OAEP_PADDING)) == -1) {
 					        ERR_load_crypto_strings();
     				}
-						ret = string(encrypt);							
+/*            char *encrypt_test = (char *)malloc(RSA_size(encrypt_key));
+            //            memset(encrypt,0,RSA_size(encrypt_key));
+            cout<<"before encrpyt"<<endl;
+            if((encrypt_len = RSA_public_encrypt(strlen(plain), (unsigned char*)plain,
+                                                 (unsigned char*)encrypt_test, encrypt_key_test, RSA_PKCS1_OAEP_PADDING)) == -1) {
+                ERR_load_crypto_strings();
+            }
+            cout<<"test   "<<encrypt_test<<endl;
+  */
+            
+            ret = string(encrypt,encrypt_len);
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);
             tmp.append(v);

@@ -242,19 +242,37 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
           std::string privateKey;
           privateKey = KeyDB::instance().getPriKey();
           EVP_PKEY *pri_key = KeyDB::instance().str2priKey(privateKey);
+          RSA *decrypt_key;
+          /*for test*/
+          FILE *rsa_pkey_file;
+          rsa_pkey_file = fopen("../db/pri1.pem", "r");
+          
+          if (!PEM_read_RSAPrivateKey(rsa_pkey_file, &decrypt_key, NULL, NULL))
+          {
+              fprintf(stderr, "Error loading RSA Private Key File.\n");
+              ERR_print_errors_fp(stderr);
+          }
+          /*test end*/
+          
           std::string encrypt_string = string ((char*)Ccnx::head (*content), content->size ());
+          cout<<encrypt_string<<endl;
           char *encrypt = (char *)(encrypt_string.c_str());
           char *decrypt = NULL;
-          RSA *decrypt_key;
           int encrypt_len  = content->size();
-          decrypt_key = EVP_PKEY_get1_RSA(pri_key);  //important line
+          cout<<"encrypt_len"<<encrypt_len<<endl;
+//          decrypt_key = EVP_PKEY_get1_RSA(pri_key);  //important line
           decrypt = (char *)malloc(encrypt_len);
+//          memset(encrypt,0,(encrypt_len));
+          char *err = (char *)malloc(130);
           if(RSA_private_decrypt(encrypt_len, (unsigned char*)encrypt, (unsigned char*)decrypt, decrypt_key, RSA_PKCS1_OAEP_PADDING) == -1)
           {
               ERR_load_crypto_strings();
+     			   ERR_error_string(ERR_get_error(), err);
+       			 fprintf(stderr, "Error encrypting message: %s\n", err);
           }
+          cout<<decrypt<<endl;
           std::string decrypt_string = string(decrypt);
-          
+          cout<<decrypt_string<<endl;
           if (pSession)
           {
             pSession->recvSharedKeyRemote(version, seqnum, chunkSize,

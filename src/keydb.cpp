@@ -283,6 +283,7 @@ int KeyDB::getMetaData(string keyName, vector<string> &mData){
 //argument string key[] is the return value, in the form of {keyName, pubKey, locator}
 int KeyDB::getKeyFromUser(string app, scope sc, string key[], string name){
     string statement;
+    cout<<"get key"<<endl;
     char strSc[2];
     sprintf(strSc, "%i", sc);
     if (name == "")
@@ -293,12 +294,19 @@ int KeyDB::getKeyFromUser(string app, scope sc, string key[], string name){
                 app + "\" = user.appName AND " + strSc + " = scope; AND \"" + name + "\" = uName;";
     sqlite3_stmt *sqlStmt;
     int errno = sqlite3_prepare(db, statement.c_str(), statement.size(), &sqlStmt, 0);
+    cout<<errno<<endl;
     if (errno == SQLITE_OK){
         int status = sqlite3_step(sqlStmt);
+        cout<<status<<endl;
         if (status == SQLITE_ROW){
+ //           cout<<"here 1"<<endl;
             key[0] = (const char *)sqlite3_column_text (sqlStmt, 0);
+   //         cout<<"here 2"<<key[0]<<endl;
             key[1] = (const char *)sqlite3_column_text (sqlStmt, 1);
-            key[2] = (const char *)sqlite3_column_text (sqlStmt, 2);
+     //       cout<<"here 3"<<key[1]<<endl;
+//            key[2] = (const char *)sqlite3_column_text (sqlStmt, 2);
+      //      cout<<"here 4"<<key[2]<<endl;
+      //      cout<<"key info"<<"  "<<key[0]<<"  "<<key[1]<<"  "<<key[2]<<endl;
         }
         sqlite3_finalize(sqlStmt);;
         return status;
