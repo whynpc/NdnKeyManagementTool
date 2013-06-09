@@ -71,12 +71,7 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
         	  {
                   oSession->recvFetchSharedKeyRemote(consumer, version, chunkNum,chunkSize, ret);
               }
-/*            char *from = (char *)ret.c_str();
-            char *to = NULL ;
-            char *key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDuSJtsqO38w2PQFrX7ZJZDZGP16hrnDhmoTqz3jk4d62e1ne2709ZxzMMIgIGEooR9xOHcBz9fUmzQu4k92KrFU7HEuNPRgtDlJlYiW49FMezn+AcOItMx0ec+wpVEbWNaBO4bIS9EkGYioXqK6LJ8FWE6HZIP9K4Z3rE/zV7W8wIDAQAB";
-            do_encrypt(&to, from,(unsigned char *)key,512);
-            ret = std::string(to);
-*/
+
 //encrypt
             vector<std::string> tmp2;
             boost::split(tmp2,prefix,boost::is_any_of("_"));
@@ -84,7 +79,8 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
             std::string publicKey[3];
             KeyDB::instance().getKeyFromUser(app,(KeyDB::global), publicKey,consumer);
       //      cout<<"after fetch"<<endl;
-       //     cout<<"key content"<<publicKey[1]<<endl;
+            cout<<"key content"<<endl;
+            cout<<publicKey[1]<<endl;
             EVP_PKEY *pub_key = KeyDB::instance().str2Key(publicKey[1]);
      //       std::string plain_string = ret;
    //         cout<<"plain "<<plain_string<<endl;
@@ -93,7 +89,7 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
 	//					cout<<pub_key->pkey.ptr<<endl;
             char plain[128];
             sprintf(plain,"%s",ret.c_str());
-            cout<<"aaaaa"<<endl;
+//            cout<<"aaaaa"<<endl;
 //            cout<<plain<<endl;
 //            plain[3]='\0';
 //            plain[plain_string.size()] = '\0';
@@ -116,17 +112,15 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
             fclose(rsa_pkey_file);
   */  				/*test end*/
   
-            cout<<"bbbbb"<<endl;
   
             RSA *encrypt_key;
         //    EVP_PKEY_set1_RSA(pub_key,encrypt_key);
             encrypt_key = EVP_PKEY_get1_RSA(pub_key);
-            cout<<"get key "<<endl;
             int encrypt_len;
             cout<<RSA_size(encrypt_key)<<endl;
             char *encrypt = (char *)malloc(RSA_size(encrypt_key));
 //            memset(encrypt,0,RSA_size(encrypt_key));
-            cout<<"before encrpyt"<<endl;
+        //    cout<<"before encrpyt"<<endl;
             if((encrypt_len = RSA_public_encrypt(strlen(plain), (unsigned char*)plain, 
     					(unsigned char*)encrypt, encrypt_key, RSA_PKCS1_OAEP_PADDING)) == -1) {
 					        ERR_load_crypto_strings();
@@ -140,7 +134,8 @@ Ccnx::Name remoteServer::parseSharedKey(Ccnx::Name name, std::string &ret,
             }
             cout<<"test   "<<encrypt_test<<endl;
   */
-            
+    //        cout<<"encrypt text:"<<endl;
+     //       cout<<encrypt<<endl;
             ret = string(encrypt,encrypt_len);
             std::string tmp = "code=0,version=";
             std::string v = boost::lexical_cast <string>(version);

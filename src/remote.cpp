@@ -262,7 +262,7 @@ void remote::runDataCallback(Name name, Ccnx::PcoPtr pco)
           cout<<"encrypt_len"<<encrypt_len<<endl;
 //          decrypt_key = EVP_PKEY_get1_RSA(pri_key);  //important line
           decrypt = (char *)malloc(encrypt_len);
-//          memset(encrypt,0,(encrypt_len));
+          memset(decrypt,0,(encrypt_len));
           char *err = (char *)malloc(130);
           if(RSA_private_decrypt(encrypt_len, (unsigned char*)encrypt, (unsigned char*)decrypt, decrypt_key, RSA_PKCS1_OAEP_PADDING) == -1)
           {
