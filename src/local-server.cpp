@@ -53,10 +53,10 @@ Ccnx::Name localServer::parseSession(Ccnx::Name name){
   if (tmp[0].compare("join") == 0)
     {
       Context::instance()->retrieveSession(appname, session, &oSession, &pSession);
-			if (pSession)
-			{
+       if (pSession)
+       {
 				pSession->recvJoinLocal();
-			}
+        }
       dataName.appendComp("code=0");
     }
   return dataName;

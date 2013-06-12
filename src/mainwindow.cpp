@@ -27,7 +27,7 @@
      centralWidget()->setLayout(mainLayout);
  }
 
- void MainWindow::show_key()
+ void MainWindow::show_info()
 {
      Application *app_bk = Context::instance()->getApplication(currentApp);
      if (app_bk != NULL)
@@ -55,6 +55,24 @@
      }
 
  }
+
+ void MainWindow::show_key()
+{
+     Application *app_bk = Context::instance()->getApplication(currentApp);
+     if (app_bk != NULL)
+     {
+         QString test;
+         if (currentCombo == "organizer")
+         {
+             OrganizerSession *oSession_bk = app_bk->getOrganizerSession(currentSession);
+             oSession_bk->getPeerInfo(currentCandidate, test);
+         }
+         textEdit->setPlainText(test);
+     }
+
+ }
+
+
  void MainWindow::appEvent(QListWidgetItem *item)
  {
      currentApp = item->text();
@@ -416,6 +434,7 @@ void MainWindow::addList()
      buttons[1]= new QPushButton(tr("refresh"));
      buttons[2]= new QPushButton(tr("refresh"));
      showButton = new QPushButton(tr("show"));
+     showKeyButton = new QPushButton(tr("show key"));
      comboBox = new QComboBox();
      comboBox->insertItem(0,"organizer");
      comboBox->insertItem(0,"participant");
@@ -432,6 +451,7 @@ void MainWindow::addList()
      layout->addWidget(buttons[1],3,1);
      layout->addWidget(buttons[2],3,2);
      layout->addWidget(showButton,3,3);
+     layout->addWidget(showKeyButton,3,4);
      connect(appList, SIGNAL(itemClicked(QListWidgetItem *)),
              this, SLOT(appEvent(QListWidgetItem *)));
      connect(sessionList, SIGNAL(itemClicked(QListWidgetItem *)),
@@ -444,7 +464,8 @@ void MainWindow::addList()
      connect(buttons[0], SIGNAL(clicked()), this, SLOT(update_app()));
      connect(buttons[1], SIGNAL(clicked()), this, SLOT(update_session()));
      connect(buttons[2], SIGNAL(clicked()), this, SLOT(update_candidate()));
-     connect(showButton,SIGNAL(clicked()),this, SLOT(show_key()));
+     connect(showButton,SIGNAL(clicked()),this, SLOT(show_info()));
+     connect(showKeyButton,SIGNAL(clicked()),this, SLOT(show_key()));
 
      connect(comboBox,SIGNAL(activated(QString)),
              this, SLOT(comboEvent(QString)));

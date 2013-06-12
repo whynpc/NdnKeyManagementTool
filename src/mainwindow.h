@@ -27,6 +27,7 @@
      void update_session();
      void update_candidate();
      void update_participate();
+     void show_info();
      void show_key();
 
      void add_app();
@@ -61,6 +62,7 @@
      enum { NumGridRows = 4, NumButtons = 4 };
      QPushButton *buttons[NumButtons];
      QPushButton *showButton;
+     QPushButton *showKeyButton;
      QGroupBox *horizontalGroupBox;
      QTextEdit *smallEditor;
      QGroupBox *gridGroupBox;
