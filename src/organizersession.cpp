@@ -3,7 +3,7 @@
 #include "remote-server.hpp"
 #include "remote.hpp"
 #include "organizersession.h"
-
+#include "keydb.h"
 
 OrganizerSession::OrganizerSession(const QString &sessionName, const QString &applicationName,
                                    const QString &selfName, QObject *parent) :
@@ -242,6 +242,19 @@ int OrganizerSession::recvOrganizerDiscoveryRemote(const std::string &peerName,
 {
     outOrganizerName.append(self->getName().toUtf8().constData());
     return 0;
+}
+
+void OrganizerSession::getPeerInfo(const QString &peerName, QString &outputBuffer) const
+{
+    std::string pubKey[3];
+    KeyDB::instance().getKeyFromUser(appName.toStdString(), KeyDB::global, pubKey, 
+                                     peerName.toStdString());
+    outputBuffer.append("PeerName: ");
+    outputBuffer.append(peerName);
+    outputBuffer.append("\nPublic Key:\n");
+    outputBuffer.append(pubKey[0].c_str());
+    outputBuffer.append("\n");
+    outputBuffer.append(pubKey[1].c_str());
 }
 
 

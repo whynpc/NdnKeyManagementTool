@@ -55,6 +55,8 @@ public:
     void getBlacklistNames(QStringList &outputList) const;
 
     void getDebugInfo(QString &outputBuffer) const;
+    void getPeerInfo( const QString &peerName, QString &outputBuffer) const;
+    
     
 
 private:
