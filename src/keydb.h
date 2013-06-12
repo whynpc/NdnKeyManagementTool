@@ -29,7 +29,8 @@ public:
         return _instance;
     }
     KeyDB() {   dbOpen = false;
-    	string DB = "KeyDB.db"; }
+    	 DB = "../db/KeyDB.db";
+        connectDB();}
     KeyDB(KeyDB const&);
     void operator=(KeyDB const&);
     

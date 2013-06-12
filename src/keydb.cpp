@@ -296,12 +296,17 @@ int KeyDB::getKeyFromUser(string app, scope sc, string key[], string name){
     if (errno == SQLITE_OK){
         int status = sqlite3_step(sqlStmt);
         if (status == SQLITE_ROW){
+ //           cout<<"here 1"<<endl;
             key[0] = (const char *)sqlite3_column_text (sqlStmt, 0);
+   //         cout<<"here 2"<<key[0]<<endl;
             key[1] = (const char *)sqlite3_column_text (sqlStmt, 1);
-            key[2] = (const char *)sqlite3_column_text (sqlStmt, 2);
-        }
-        sqlite3_finalize(sqlStmt);;
+     //       cout<<"here 3"<<key[1]<<endl;
+//            key[2] = (const char *)sqlite3_column_text (sqlStmt, 2);
+      //      cout<<"here 4"<<key[2]<<endl;
+      //      cout<<"key info"<<"  "<<key[0]<<"  "<<key[1]<<"  "<<key[2]<<endl;
+        sqlite3_finalize(sqlStmt);
         return status;
+      }
     }
     return errno;
 }
